@@ -55,6 +55,7 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="SplashState.cpp" />
@@ -75,6 +76,7 @@
     <ClInclude Include="Land.hpp" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Neuron.h" />
     <ClInclude Include="Pipe.hpp" />
     <ClInclude Include="SplashState.hpp" />
