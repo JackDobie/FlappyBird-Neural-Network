@@ -4,9 +4,13 @@
 
 Neuron::Neuron()
 {
+	_weights = std::vector<float>(NN_INPUTS);
 	for (int i = 0; i < NN_INPUTS; i++)
 	{
-		_weights[i] = 1.0f;
+		float random = ((float)rand()) / (float)RAND_MAX;
+		random = random * (_weightsMax - _weightsMin);
+		random += _weightsMin;
+		_weights[i] = random;
 	}
 }
 
@@ -14,10 +18,19 @@ Neuron::~Neuron()
 {
 }
 
-float Neuron::Calculate(float inputs[NN_INPUTS])
+float Neuron::Calculate(std::vector<float> inputs)
 {
+	_weights = std::vector<float>(inputs.size());
+	for (int i = 0; i < inputs.size(); i++)
+	{
+		float random = ((float)rand()) / (float)RAND_MAX;
+		random = random * (_weightsMax - _weightsMin);
+		random += _weightsMin;
+		_weights[i] = random;
+	}
+
 	float sum = 0;
-	for (int i = 0; i < NN_INPUTS; i++)
+	for (int i = 0; i < inputs.size(); i++)
 	{
 		sum += (inputs[i] * _weights[i]);
 	}

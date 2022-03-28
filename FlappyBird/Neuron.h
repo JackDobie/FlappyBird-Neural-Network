@@ -1,6 +1,8 @@
 #pragma once
 
-#define NN_INPUTS 2
+#include <vector>
+
+#define NN_INPUTS 3
 
 enum class Function
 {
@@ -14,12 +16,14 @@ class Neuron
 public:
 	Neuron();
 	~Neuron();
-	float Calculate(float inputs[NN_INPUTS]);
+	float Calculate(std::vector<float> inputs);
 
 	float Sigmoid(float value);
 	float ReLu(float value);
 private:
-	float _weights[NN_INPUTS];
-	float _bias = 1.0f;
+	std::vector<float> _weights;
+	float _weightsMin = -0.7f;
+	float _weightsMax = 0.7f;
+	float _bias = 0.05f;
 	Function _activationFunc = Function::Identity;
 };

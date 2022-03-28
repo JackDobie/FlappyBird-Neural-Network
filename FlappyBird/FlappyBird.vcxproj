@@ -52,8 +52,10 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Land.cpp" />
+    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -71,7 +73,9 @@
     <ClInclude Include="HUD.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClInclude Include="Land.hpp" />
+    <ClInclude Include="Layer.h" />
     <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="Neuron.h" />
     <ClInclude Include="Pipe.hpp" />
     <ClInclude Include="SplashState.hpp" />
     <ClInclude Include="State.hpp" />
