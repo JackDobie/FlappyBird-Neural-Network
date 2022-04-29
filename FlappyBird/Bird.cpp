@@ -22,10 +22,22 @@ namespace Sonar
 		_birdSprite.setOrigin(origin);
 
 		_rotation = 0;
+
+		_shouldFlap = false;
+
+		_alive = true;
+
+		_score = 0;
 	}
 
 	Bird::~Bird()
 	{
+	}
+
+	void Bird::ResetPosition()
+	{
+		_birdSprite.setPosition((_data->window.getSize().x / 4) - (_birdSprite.getGlobalBounds().width / 2), (_data->window.getSize().y / 2) - (_birdSprite.getGlobalBounds().height / 2));
+		_rotation = 0;
 	}
 
 	void Bird::Draw()
@@ -104,7 +116,7 @@ namespace Sonar
 		return _birdSprite;
 	}
 
-	void Bird::getHeight(int& x, int& y)
+	void Bird::GetHeight(int& x, int& y)
 	{
 		sf::Vector2f v = _birdSprite.getPosition();
 		x = (int)v.x;

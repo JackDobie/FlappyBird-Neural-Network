@@ -5,29 +5,37 @@
 #include "NeuralNetwork.h"
 using namespace Sonar;
 
+#define BIRD_COUNT 500
+
 class AIController
 {
 public:
-	AIController(Bird* bird);
+	AIController(GameDataRef data);
 	~AIController();
 
-	void setGameState(GameState* pGameState) { m_pGameState = pGameState; }
-	void update();
+	void SetGameState(GameState* pGameState) { m_pGameState = pGameState; }
+	void Update();
 	// note when this is called, it resets the flap state
-	bool shouldFlap();
+	//bool shouldFlap();
 
-	Bird* GetBird() { return m_bird; }
+	void TryFlap();
+
+	//Bird* GetBird() { return m_bird; }
+	std::vector<Bird*> GetBirds() { return m_birds; }
+
+	void Reset();
+
+	void UpdateScore(int score);
 
 private:
-	float distanceToFloor(Land* land, Bird* bird);
-	float distanceToNearestPipes(Pipe* pipe, Bird* bird);
-	float distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird);
+	float DistanceToFloor(Land* land, Bird* bird);
+	float DistanceToNearestPipes(Pipe* pipe, Bird* bird);
+	float DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird);
 
 	GameState*	m_pGameState;
-	bool		m_bShouldFlap;
 
 	NeuralNetwork* m_neuralNet;
 
-	Bird* m_bird;
+	std::vector<Bird*> m_birds;
 };
 

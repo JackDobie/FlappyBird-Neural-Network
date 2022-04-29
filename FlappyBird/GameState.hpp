@@ -14,8 +14,6 @@
 
 class AIController;
 
-#define BIRD_COUNT 5
-
 namespace Sonar
 {
 	class GameState : public State
@@ -29,23 +27,19 @@ namespace Sonar
 		void Update(float dt);
 		void Draw(float dt);
 
-		void Reset(GameDataRef data);
-
-		Pipe* GetPipeContainer() { return pipe; };
-		Land* GetLandContainer() { return land; };
-		std::vector<Bird*> GetBirds() { return birds; }
+		Pipe* GetPipeContainer() { return _pipe; };
+		Land* GetLandContainer() { return _land; };
 
 	private:
 		GameDataRef _data;
 
 		sf::Sprite _background;
 
-		Pipe *pipe;
-		Land *land;
-		std::vector<Bird*> birds;
-		Collision collision;
-		Flash *flash;
-		HUD *hud;
+		Pipe* _pipe;
+		Land* _land;
+		Collision _collision;
+		Flash* _flash;
+		HUD* _hud;
 
 		sf::Clock clock;
 
@@ -64,7 +58,8 @@ namespace Sonar
 		sf::Sound _wingSound;
 		sf::Sound _pointSound;
 
-		//AIController* m_pAIController;
-		std::vector<AIController*> m_pAIControllers;
+		AIController* _AIController;
+
+		void Reset();
 	};
 }

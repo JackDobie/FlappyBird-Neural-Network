@@ -4,6 +4,8 @@
 #include "State.hpp"
 #include "Game.hpp"
 
+#include "GameState.hpp"
+
 namespace Sonar
 {
     class GameOverState : public State
@@ -32,7 +34,6 @@ namespace Sonar
         
         int _score;
         int _highScore;
-        
     };
 }
 

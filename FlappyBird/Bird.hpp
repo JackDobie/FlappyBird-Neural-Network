@@ -15,6 +15,8 @@ namespace Sonar
 		Bird(GameDataRef data);
 		~Bird();
 
+		void ResetPosition();
+
 		void Draw();
 
 		void Animate(float dt);
@@ -25,7 +27,15 @@ namespace Sonar
 
 		const sf::Sprite &GetSprite() const;
 
-		void getHeight(int& x, int& y);
+		void GetHeight(int& x, int& y);
+
+		bool GetShouldFlap() { return _shouldFlap; }
+		void SetShouldFlap(bool flap) { _shouldFlap = flap; }
+
+		bool GetAlive() { return _alive; }
+		void SetAlive(bool alive) { _alive = alive; }
+
+		int _score;
 
 	private:
 		GameDataRef _data;
@@ -43,5 +53,8 @@ namespace Sonar
 
 		float _rotation;
 
+		bool _shouldFlap;
+
+		bool _alive;
 	};
 }

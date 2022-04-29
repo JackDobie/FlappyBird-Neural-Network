@@ -48,21 +48,22 @@ namespace Sonar
 		this->_data->assets.LoadTexture("Scoring Pipe", SCORING_PIPE_FILEPATH);
 		this->_data->assets.LoadFont("Flappy Font", FLAPPY_FONT_FILEPATH);
 
-		pipe = new Pipe(_data);
-		land = new Land(_data);
-		//bird = new Bird(_data);
-		flash = new Flash(_data);
-		hud = new HUD(_data);
+		_pipe = new Pipe(_data);
+		_land = new Land(_data);
+		_flash = new Flash(_data);
+		_hud = new HUD(_data);
 
-		for (int i = 0; i < BIRD_COUNT; i++)
+		_AIController = new AIController(_data);
+
+		/*for (int i = 0; i < BIRD_COUNT; i++)
 		{
 			m_pAIControllers.push_back(new AIController(new Bird(_data)));
-		}
+		}*/
 
 		_background.setTexture(this->_data->assets.GetTexture("Game Background"));
 
 		_score = 0;
-		hud->UpdateScore(_score);
+		_hud->UpdateScore(_score);
 
 		_gameState = GameStates::eReady;
 	}
@@ -73,16 +74,20 @@ namespace Sonar
 		{
 			_gameState = GameStates::ePlaying;
 
-			for (AIController* ai : m_pAIControllers)
-			{
-				ai->update();
-				if (ai->shouldFlap())
-				{
-					std::cout << "tap!" << std::endl;
-					ai->GetBird()->Tap();
-					_wingSound.play();
-				}
-			}
+			//for (AIController* ai : m_pAIControllers)
+			//{
+			//	ai->Update();
+			//	ai->TryFlap();
+			//	/*if (ai->shouldFlap())
+			//	{
+			//		std::cout << "tap!" << std::endl;
+			//		ai->GetBird()->Tap();
+			//		_wingSound.play();
+			//	}*/
+			//}
+
+			_AIController->Update();
+			_AIController->TryFlap();
 
 			/*if (m_pAIController->shouldFlap())
 			{
@@ -108,6 +113,7 @@ namespace Sonar
 				if (GameStates::eGameOver != _gameState)
 				{
 					_gameState = GameStates::ePlaying;
+					_AIController->GetBirds()[0]->Tap();
 					//bird->Tap();
 					//_wingSound.play();
 				}
@@ -119,81 +125,104 @@ namespace Sonar
 	{
 		if (GameStates::eGameOver != _gameState)
 		{
-			for (AIController* ai : m_pAIControllers)
+			for (Bird* b : _AIController->GetBirds())
 			{
-				ai->GetBird()->Animate(dt);
+				b->Animate(dt);
 			}
-			land->MoveLand(dt);
+			_land->MoveLand(dt);
 		}
 
 		if (GameStates::ePlaying == _gameState)
 		{
-			pipe->MovePipes(dt);
+			_pipe->MovePipes(dt);
 
 			if (clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
 			{
-				pipe->RandomisePipeOffset();
+				_pipe->RandomisePipeOffset();
 
-				pipe->SpawnInvisiblePipe();
-				pipe->SpawnBottomPipe();
-				pipe->SpawnTopPipe();
-				pipe->SpawnScoringPipe();
+				_pipe->SpawnInvisiblePipe();
+				_pipe->SpawnBottomPipe();
+				_pipe->SpawnTopPipe();
+				_pipe->SpawnScoringPipe();
 
 				clock.restart();
 			}
 
-			for (AIController* ai : m_pAIControllers)
+			for (Bird* b : _AIController->GetBirds())
 			{
-				ai->GetBird()->Update(dt);
-			}
-
-			std::vector<sf::Sprite> landSprites = land->GetSprites();
-
-			for (unsigned int i = 0; i < landSprites.size(); i++)
-			{
-				for (AIController* ai : m_pAIControllers)
+				if (b->GetAlive())
 				{
-					if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
-					{
-						_gameState = GameStates::eGameOver;
-
-						clock.restart();
-
-						_hitSound.play();
-					}
+					b->Update(dt);
 				}
 			}
 
-			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
+			std::vector<sf::Sprite> landSprites = _land->GetSprites();
+
+			for (unsigned int i = 0; i < landSprites.size(); i++)
+			{
+				bool allCollide = true;
+				for (Bird* b : _AIController->GetBirds())
+				{
+					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+					{
+						_hitSound.play();
+						b->_score = _score;
+						b->SetAlive(false);
+					}
+					else
+					{
+						allCollide = false;
+					}
+				}
+				if (allCollide)
+				{
+					_gameState = GameStates::eGameOver;
+
+					clock.restart();
+				}
+			}
+
+			std::vector<sf::Sprite> pipeSprites = _pipe->GetSprites();
 
 			for (unsigned int i = 0; i < pipeSprites.size(); i++)
 			{
-				for (AIController* ai : m_pAIControllers)
+				bool allCollide = true;
+				for (Bird* b : _AIController->GetBirds())
 				{
-					if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
 					{
-						_gameState = GameStates::eGameOver;
-
-						clock.restart();
-
 						_hitSound.play();
+						b->_score = _score;
+						b->SetAlive(false);
 					}
+					else
+					{
+						allCollide = false;
+					}
+				}
+				if (allCollide)
+				{
+					_gameState = GameStates::eGameOver;
+
+					clock.restart();
 				}
 			}
 
 			if (GameStates::ePlaying == _gameState)
 			{
-				std::vector<sf::Sprite> &scoringSprites = pipe->GetScoringSprites();
+				std::vector<sf::Sprite> &scoringSprites = _pipe->GetScoringSprites();
 
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
-					for (AIController* ai : m_pAIControllers)
+					for (Bird* b : _AIController->GetBirds())
 					{
-						if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+						if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
 						{
 							_score++;
 
-							hud->UpdateScore(_score);
+							_AIController->UpdateScore(_score);
+
+							_hud->UpdateScore(_score);
 
 							scoringSprites.erase(scoringSprites.begin() + i);
 
@@ -206,11 +235,13 @@ namespace Sonar
 
 		if (GameStates::eGameOver == _gameState)
 		{
-			flash->Show(dt);
+			_flash->Show(dt);
 
 			if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
 			{
-				this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
+				// todo: reset aicontroller
+				Reset();
+				//this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
 			}
 		}
 	}
@@ -221,28 +252,31 @@ namespace Sonar
 
 		this->_data->window.draw(this->_background);
 
-		pipe->DrawPipes();
-		land->DrawLand();
+		_pipe->DrawPipes();
+		_land->DrawLand();
 
-		for (AIController* ai : m_pAIControllers)
+		for (Bird* b : _AIController->GetBirds())
 		{
-			ai->GetBird()->Draw();
+			b->Draw();
 		}
 
-		flash->Draw();
+		_flash->Draw();
 
-		hud->Draw();
+		_hud->Draw();
 
 		this->_data->window.display();
 	}
 
-	void GameState::Reset(GameDataRef data)
+	void GameState::Reset()
 	{
-		delete(pipe);
-		delete(land);
-		birds.clear();
-		delete(flash);
-		delete(hud);
-		Init();
+		_pipe = new Pipe(_data);
+		_land = new Land(_data);
+		_flash = new Flash(_data);
+		_hud = new HUD(_data);
+
+		_score = 0;
+		_hud->UpdateScore(_score);
+		_AIController->Reset();
+		_gameState = GameStates::eReady;
 	}
 }

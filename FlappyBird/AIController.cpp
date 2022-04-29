@@ -6,12 +6,15 @@
 using namespace std;
 #define ERROR_DISTANCE 9999
 
-AIController::AIController(Bird* bird)
+AIController::AIController(GameDataRef data)
 {
 	m_pGameState = nullptr;
-	m_bShouldFlap = false;
 	m_neuralNet = new NeuralNetwork();
-	m_bird = bird;
+
+	for (int i = 0; i < BIRD_COUNT; i++)
+	{
+		m_birds.push_back(new Bird(data));
+	}
 }
 
 AIController::~AIController()
@@ -24,7 +27,7 @@ AIController::~AIController()
 
 // update - the AI method which determines whether the bird should flap or not. 
 // set m_bShouldFlap to true or false.
-void AIController::update()
+void AIController::Update()
 {
 	if (m_pGameState == nullptr)
 		return;
@@ -32,40 +35,33 @@ void AIController::update()
 	Pipe* pipe = m_pGameState->GetPipeContainer();
 	Land* land = m_pGameState->GetLandContainer();
 
-	// do some AI stuff, decide whether to flap
-	float fDistanceToFloor = distanceToFloor(land, m_bird);
-
-	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, m_bird);
-
-	if (fDistanceToNearestPipe != ERROR_DISTANCE) {
-		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, m_bird);
-
-		m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
-	}
-	else
+	for (Bird* b : m_birds)
 	{
-		m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
+		float fDistanceToFloor = DistanceToFloor(land, b);
+
+		float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, b);
+
+		if (fDistanceToNearestPipe != ERROR_DISTANCE) {
+			float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
+
+			m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
+		}
+		else
+		{
+			m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
+		}
+
+		if (m_neuralNet->GetLayers().back()[0].GetOutput() >= 0.5f)
+		{
+			b->SetShouldFlap(true);
+		}
 	}
-
-	if (m_neuralNet->GetLayers().back()[0].GetOutput() >= 0.5f)
-	{
-		m_bShouldFlap = true;
-	}
-
-
-	//if (outf > 0.5f)
-	//{
-	//	m_bShouldFlap = true;
-	//	std::cout << /*"2 " << */outf << std::endl;
-	//}
 
 	// this means the birdie always flaps. Should only be called when the bird should need to flap. 
 	//m_bShouldFlap = true;
-
-	return;
 }
 
-float AIController::distanceToFloor(Land* land, Bird* bird)
+float AIController::DistanceToFloor(Land* land, Bird* bird)
 {
 	// the land is always the same height so get the first sprite
 	std::vector<sf::Sprite> landSprites = land->GetSprites();
@@ -77,7 +73,7 @@ float AIController::distanceToFloor(Land* land, Bird* bird)
 	return ERROR_DISTANCE; // this is an error but also means 
 }
 
-float AIController::distanceToNearestPipes(Pipe* pipe, Bird* bird)
+float AIController::DistanceToNearestPipes(Pipe* pipe, Bird* bird)
 {
 	float nearest1 = 999999;
 	sf::Sprite* nearestSprite1 = nullptr;
@@ -99,7 +95,7 @@ float AIController::distanceToNearestPipes(Pipe* pipe, Bird* bird)
 	return nearestSprite1->getPosition().x - bird->GetSprite().getPosition().x;
 }
 
-float AIController::distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
+float AIController::DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 {
 	float nearest1 = 999999;
 	float nearest2 = 999999;
@@ -144,11 +140,56 @@ float AIController::distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 }
 
 // note when this is called, it resets the flap state (don't edit)
-bool AIController::shouldFlap()
-{
-	bool output = m_bShouldFlap;
-	m_bShouldFlap = false;
+//bool AIController::shouldFlap()
+//{
+//	bool output = m_bShouldFlap;
+//	m_bShouldFlap = false;
+//
+//	return output;
+//}
 
-	return output;
+void AIController::TryFlap()
+{
+	for (Bird* b : m_birds)
+	{
+		// check if b needs to flap, then flap and set to false
+		if (b->GetShouldFlap())
+		{
+			b->Tap();
+			b->SetShouldFlap(false);
+		}
+	}
 }
 
+void AIController::Reset()
+{
+	// sort birds by score
+	sort(m_birds.begin(), m_birds.end(),
+		[](const Bird* lhs, const Bird* rhs)
+		{ return lhs->_score < rhs->_score; });
+
+	int halfSize = m_birds.size() / 2;
+	for (int i = 0; i < halfSize; i++)
+	{
+		m_birds[i + halfSize] = m_birds[i];
+		//m_birds[i + halfSize].Mutate
+		m_birds[i + halfSize]->ResetPosition();
+		m_birds[i]->ResetPosition();
+	}
+
+	// mutate
+
+	for (Bird* b : m_birds)
+	{
+		b->_score = 0;
+		b->SetAlive(true);
+	}
+}
+
+void AIController::UpdateScore(int score)
+{
+	for (Bird* b : m_birds)
+	{
+		b->_score = score;
+	}
+}
