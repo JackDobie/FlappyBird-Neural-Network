@@ -8,14 +8,12 @@
 
 #include <iostream>
 
-#define PLAY_WITH_AI 1
-
 namespace Sonar
 {
 	GameState::GameState(GameDataRef data) : _data(data)
 	{
-		m_pAIController = new AIController();
-		m_pAIController->setGameState(this);
+		//m_pAIController = new AIController();
+		//m_pAIController->setGameState(this);
 	}
 
 	void GameState::Init()
@@ -52,9 +50,14 @@ namespace Sonar
 
 		pipe = new Pipe(_data);
 		land = new Land(_data);
-		bird = new Bird(_data);
+		//bird = new Bird(_data);
 		flash = new Flash(_data);
 		hud = new HUD(_data);
+
+		for (int i = 0; i < BIRD_COUNT; i++)
+		{
+			m_pAIControllers.push_back(new AIController(new Bird(_data)));
+		}
 
 		_background.setTexture(this->_data->assets.GetTexture("Game Background"));
 
@@ -66,25 +69,31 @@ namespace Sonar
 
 	void GameState::HandleInput()
 	{
-#if PLAY_WITH_AI
 		if (GameStates::eGameOver != _gameState)
 		{
 			_gameState = GameStates::ePlaying;
 
-			m_pAIController->update();
+			for (AIController* ai : m_pAIControllers)
+			{
+				ai->update();
+				if (ai->shouldFlap())
+				{
+					std::cout << "tap!" << std::endl;
+					ai->GetBird()->Tap();
+					_wingSound.play();
+				}
+			}
 
-			if (m_pAIController->shouldFlap())
+			/*if (m_pAIController->shouldFlap())
 			{
 				std::cout << "tap!" << std::endl;
 				bird->Tap();
 				_wingSound.play();
 			}
 			else {
-				std::cout << "not tap :(" << std::endl;
-			}
+				std::cout << "---------" << std::endl;
+			}*/
 		}
-
-#endif
 
 		sf::Event event;
 		while (this->_data->window.pollEvent(event))
@@ -99,9 +108,8 @@ namespace Sonar
 				if (GameStates::eGameOver != _gameState)
 				{
 					_gameState = GameStates::ePlaying;
-					bird->Tap();
-
-					_wingSound.play();
+					//bird->Tap();
+					//_wingSound.play();
 				}
 			}
 		}
@@ -111,7 +119,10 @@ namespace Sonar
 	{
 		if (GameStates::eGameOver != _gameState)
 		{
-			bird->Animate(dt);
+			for (AIController* ai : m_pAIControllers)
+			{
+				ai->GetBird()->Animate(dt);
+			}
 			land->MoveLand(dt);
 		}
 
@@ -131,19 +142,25 @@ namespace Sonar
 				clock.restart();
 			}
 
-			bird->Update(dt);
+			for (AIController* ai : m_pAIControllers)
+			{
+				ai->GetBird()->Update(dt);
+			}
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
 
 			for (unsigned int i = 0; i < landSprites.size(); i++)
 			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+				for (AIController* ai : m_pAIControllers)
 				{
-					_gameState = GameStates::eGameOver;
+					if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+					{
+						_gameState = GameStates::eGameOver;
 
-					clock.restart();
+						clock.restart();
 
-					_hitSound.play();
+						_hitSound.play();
+					}
 				}
 			}
 
@@ -151,13 +168,16 @@ namespace Sonar
 
 			for (unsigned int i = 0; i < pipeSprites.size(); i++)
 			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+				for (AIController* ai : m_pAIControllers)
 				{
-					_gameState = GameStates::eGameOver;
+					if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+					{
+						_gameState = GameStates::eGameOver;
 
-					clock.restart();
+						clock.restart();
 
-					_hitSound.play();
+						_hitSound.play();
+					}
 				}
 			}
 
@@ -167,15 +187,18 @@ namespace Sonar
 
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
-					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+					for (AIController* ai : m_pAIControllers)
 					{
-						_score++;
+						if (collision.CheckSpriteCollision(ai->GetBird()->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+						{
+							_score++;
 
-						hud->UpdateScore(_score);
+							hud->UpdateScore(_score);
 
-						scoringSprites.erase(scoringSprites.begin() + i);
+							scoringSprites.erase(scoringSprites.begin() + i);
 
-						_pointSound.play();
+							_pointSound.play();
+						}
 					}
 				}
 			}
@@ -200,12 +223,26 @@ namespace Sonar
 
 		pipe->DrawPipes();
 		land->DrawLand();
-		bird->Draw();
+
+		for (AIController* ai : m_pAIControllers)
+		{
+			ai->GetBird()->Draw();
+		}
 
 		flash->Draw();
 
 		hud->Draw();
 
 		this->_data->window.display();
+	}
+
+	void GameState::Reset(GameDataRef data)
+	{
+		delete(pipe);
+		delete(land);
+		birds.clear();
+		delete(flash);
+		delete(hud);
+		Init();
 	}
 }

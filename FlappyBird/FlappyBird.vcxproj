@@ -52,7 +52,6 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Land.cpp" />
-    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
@@ -74,7 +73,6 @@
     <ClInclude Include="HUD.hpp" />
     <ClInclude Include="InputManager.hpp" />
     <ClInclude Include="Land.hpp" />
-    <ClInclude Include="Layer.h" />
     <ClInclude Include="MainMenuState.hpp" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Neuron.h" />

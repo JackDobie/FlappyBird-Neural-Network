@@ -1,16 +1,25 @@
 #include "Neuron.h"
 #include <math.h>
 #include <algorithm>
+#include "NeuralNetwork.h"
 
 Neuron::Neuron()
 {
-	_weights = std::vector<float>(NN_INPUTS);
-	for (int i = 0; i < NN_INPUTS; i++)
+	_currentLayer = 0;
+	_weights.clear();
+	_bias = 0.0f;
+	_output = 0.0f;
+}
+
+Neuron::Neuron(int layerIndex, int prevLayerSize)
+{
+	_currentLayer = layerIndex;
+	_weights.clear();
+	_bias = 0.0f;
+	_output = 0.0f;
+	for (int i = 0; i < prevLayerSize; i++)
 	{
-		float random = ((float)rand()) / (float)RAND_MAX;
-		random = random * (_weightsMax - _weightsMin);
-		random += _weightsMin;
-		_weights[i] = random;
+		_weights.push_back(RandFrom(_weightsMin, _weightsMax));
 	}
 }
 
@@ -18,35 +27,60 @@ Neuron::~Neuron()
 {
 }
 
-float Neuron::Calculate(std::vector<float> inputs)
+float Neuron::Calculate(NeuralNetwork network)
 {
-	_weights = std::vector<float>(inputs.size());
-	for (int i = 0; i < inputs.size(); i++)
-	{
-		float random = ((float)rand()) / (float)RAND_MAX;
-		random = random * (_weightsMax - _weightsMin);
-		random += _weightsMin;
-		_weights[i] = random;
-	}
+	_output = 0.0f;
 
-	float sum = 0;
-	for (int i = 0; i < inputs.size(); i++)
+	// use previous layers outputs as inputs
+	for (int i = 0; i < network.GetLayers()[_currentLayer - 1].size(); i++)
 	{
-		sum += (inputs[i] * _weights[i]);
+		_output += network.GetLayers()[_currentLayer - 1][i]._output * _weights[i];
 	}
-	float result = sum + _bias;
+	_output += _bias;
+
 	switch (_activationFunc)
 	{
-	case Function::Identity:
-		return result;
-	case Function::Sigmoid:
-		return Sigmoid(result);
-	case Function::ReLu:
-		return ReLu(result);
+	case ActivationFunction::Sigmoid:
+		_output = Sigmoid(_output);
+		break;
+	case ActivationFunction::ReLu:
+		_output = ReLu(_output);
+		break;
 	default:
-		return result;
+		break;
 	}
+
+	return _output;
 }
+
+//float Neuron::Calculate(std::vector<float> inputs)
+//{
+//	_weights = std::vector<float>(inputs.size());
+//	for (int i = 0; i < inputs.size(); i++)
+//	{
+//		float random = ((float)rand()) / (float)RAND_MAX;
+//		random = random * (_weightsMax - _weightsMin);
+//		random += _weightsMin;
+//		_weights[i] = random;
+//	}
+//
+//	float sum = 0;
+//	for (int i = 0; i < inputs.size(); i++)
+//	{
+//		sum += (inputs[i] * _weights[i]);
+//	}
+//	switch (_activationFunc)
+//	{
+//	case ActivationFunction::Identity:
+//		return sum;
+//	case ActivationFunction::Sigmoid:
+//		return Sigmoid(sum);
+//	case ActivationFunction::ReLu:
+//		return ReLu(sum);
+//	default:
+//		return sum;
+//	}
+//}
 
 float Neuron::Sigmoid(float value)
 {
@@ -56,4 +90,12 @@ float Neuron::Sigmoid(float value)
 float Neuron::ReLu(float value)
 {
 	return std::max(0.0f, value);
+}
+
+float Neuron::RandFrom(float min, float max)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	random = random * (max - min);
+	random += min;
+	return random;
 }

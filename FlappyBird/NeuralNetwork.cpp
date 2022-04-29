@@ -2,25 +2,46 @@
 
 NeuralNetwork::NeuralNetwork()
 {
+	_layers.clear();
+
 	for (int i = 0; i < NN_LAYERS; i++)
 	{
-		_layers.push_back(Layer());
+		_layers.push_back({});
+		for (int j = 0; j < NN_NEURONS; j++)
+		{
+			// i==0 does not have a previous layer so make with default constructor
+			if (i == 0)
+			{
+				_layers[i].push_back(Neuron());
+			}
+			else
+			{
+				_layers[i].push_back(Neuron(i, _layers[i - 1].size()));
+			}
+		}
 	}
 }
 
 NeuralNetwork::~NeuralNetwork()
 {
-	_layers.clear();
-	_outputs.clear();
+
 }
 
-std::vector<float> NeuralNetwork::Calculate(std::vector<float> inputs)
+void NeuralNetwork::Calculate(std::vector<float> inputs)
 {
-	std::vector<float> out = _layers[0].Calculate(inputs);
-	for (int i = 1; i < NN_LAYERS; i++)
+	for (int i = 0; i < _layers.size(); i++)
 	{
-		out = _layers[i].Calculate(out);
+		for (int j = 0; j < _layers[i].size(); j++)
+		{
+			// i==0 will have no previous layers, so set to the inputs
+			if (i == 0)
+			{
+				_layers[i][j].SetOutput(inputs[j]);
+			}
+			else
+			{
+				_layers[i][j].Calculate(*this);
+			}
+		}
 	}
-	_outputs = out;
-	return _outputs;
 }

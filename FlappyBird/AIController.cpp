@@ -6,16 +6,20 @@
 using namespace std;
 #define ERROR_DISTANCE 9999
 
-
-AIController::AIController()
+AIController::AIController(Bird* bird)
 {
 	m_pGameState = nullptr;
 	m_bShouldFlap = false;
+	m_neuralNet = new NeuralNetwork();
+	m_bird = bird;
 }
 
 AIController::~AIController()
 {
-
+	if (m_neuralNet)
+	{
+		delete(m_neuralNet);
+	}
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
@@ -27,20 +31,34 @@ void AIController::update()
 
 	Pipe* pipe = m_pGameState->GetPipeContainer();
 	Land* land = m_pGameState->GetLandContainer();
-	Bird* bird = m_pGameState->GetBird();
 
 	// do some AI stuff, decide whether to flap
-	float fDistanceToFloor = distanceToFloor(land, bird);
+	float fDistanceToFloor = distanceToFloor(land, m_bird);
 
-	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
+	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, m_bird);
 
 	if (fDistanceToNearestPipe != ERROR_DISTANCE) {
-		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
-		fDistanceToCentreOfGap = fDistanceToCentreOfGap;
+		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, m_bird);
 
-		
+		m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
 	}
-	
+	else
+	{
+		m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
+	}
+
+	if (m_neuralNet->GetLayers().back()[0].GetOutput() >= 0.5f)
+	{
+		m_bShouldFlap = true;
+	}
+
+
+	//if (outf > 0.5f)
+	//{
+	//	m_bShouldFlap = true;
+	//	std::cout << /*"2 " << */outf << std::endl;
+	//}
+
 	// this means the birdie always flaps. Should only be called when the bird should need to flap. 
 	//m_bShouldFlap = true;
 
@@ -126,7 +144,7 @@ float AIController::distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 }
 
 // note when this is called, it resets the flap state (don't edit)
-bool AIController::shouldFlap() 
+bool AIController::shouldFlap()
 {
 	bool output = m_bShouldFlap;
 	m_bShouldFlap = false;

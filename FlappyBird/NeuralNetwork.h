@@ -2,10 +2,9 @@
 
 #include <vector>
 #include "Neuron.h"
-#include "Layer.h"
 
-#define NN_LAYERS 2
-#define NN_OUTPUTS 1
+#define NN_LAYERS 4
+#define NN_NEURONS 1
 
 class NeuralNetwork
 {
@@ -13,9 +12,11 @@ public:
 	NeuralNetwork();
 	~NeuralNetwork();
 
-	std::vector<float> Calculate(std::vector<float> inputs);
+	void Calculate(std::vector<float> inputs);
 
-	std::vector<Layer> _layers;
-	std::vector<float> _outputs;
+	std::vector<std::vector<Neuron>> GetLayers() { return _layers; }
+	void SetLayers(std::vector<std::vector<Neuron>> newLayers) { _layers = newLayers; }
+private:
+	std::vector<std::vector<Neuron>> _layers;
 };
 

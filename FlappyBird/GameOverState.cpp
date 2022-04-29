@@ -13,6 +13,13 @@ namespace Sonar
         
     }
     
+    /*GameOverState::GameOverState(GameDataRef data, int score, GameState* gameState)
+    {
+        _data = data;
+        _score = score;
+        _gameState = gameState;
+    }*/
+
     void GameOverState::Init()
     {
         std::ifstream readFile;
@@ -106,6 +113,9 @@ namespace Sonar
             
             if (this->_data->input.IsSpriteClicked(this->_retryButton, sf::Mouse::Left, this->_data->window))
             {
+                // todo: reset gamestate instead of making new
+                /*_gameState->Reset(_data);
+                this->_data->machine.AddState(StateRef(_gameState), true);*/
                 this->_data->machine.AddState(StateRef(new GameState(_data)), true);
             }
         }

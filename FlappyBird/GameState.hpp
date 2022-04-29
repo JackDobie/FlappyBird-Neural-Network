@@ -14,6 +14,8 @@
 
 class AIController;
 
+#define BIRD_COUNT 5
+
 namespace Sonar
 {
 	class GameState : public State
@@ -27,9 +29,11 @@ namespace Sonar
 		void Update(float dt);
 		void Draw(float dt);
 
+		void Reset(GameDataRef data);
+
 		Pipe* GetPipeContainer() { return pipe; };
 		Land* GetLandContainer() { return land; };
-		Bird* GetBird() { return bird; }
+		std::vector<Bird*> GetBirds() { return birds; }
 
 	private:
 		GameDataRef _data;
@@ -38,7 +42,7 @@ namespace Sonar
 
 		Pipe *pipe;
 		Land *land;
-		Bird *bird;
+		std::vector<Bird*> birds;
 		Collision collision;
 		Flash *flash;
 		HUD *hud;
@@ -60,6 +64,7 @@ namespace Sonar
 		sf::Sound _wingSound;
 		sf::Sound _pointSound;
 
-		AIController* m_pAIController;
+		//AIController* m_pAIController;
+		std::vector<AIController*> m_pAIControllers;
 	};
 }
