@@ -9,7 +9,6 @@ using namespace std;
 AIController::AIController(GameDataRef data)
 {
 	m_pGameState = nullptr;
-	m_neuralNet = new NeuralNetwork();
 
 	for (int i = 0; i < BIRD_COUNT; i++)
 	{
@@ -19,10 +18,7 @@ AIController::AIController(GameDataRef data)
 
 AIController::~AIController()
 {
-	if (m_neuralNet)
-	{
-		delete(m_neuralNet);
-	}
+
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
@@ -44,16 +40,17 @@ void AIController::Update()
 		if (fDistanceToNearestPipe != ERROR_DISTANCE) {
 			float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
 
-			m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
+			b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
 		}
 		else
 		{
-			m_neuralNet->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
+			b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
 		}
 
-		if (m_neuralNet->GetLayers().back()[0].GetOutput() >= 0.5f)
+		if (b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput() >= 0.5f)
 		{
 			b->SetShouldFlap(true);
+			std::cout << b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput() << std::endl;
 		}
 	}
 
@@ -139,15 +136,6 @@ float AIController::DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 	return distance - bird->GetSprite().getPosition().y;
 }
 
-// note when this is called, it resets the flap state (don't edit)
-//bool AIController::shouldFlap()
-//{
-//	bool output = m_bShouldFlap;
-//	m_bShouldFlap = false;
-//
-//	return output;
-//}
-
 void AIController::TryFlap()
 {
 	for (Bird* b : m_birds)
@@ -172,12 +160,10 @@ void AIController::Reset()
 	for (int i = 0; i < halfSize; i++)
 	{
 		m_birds[i + halfSize] = m_birds[i];
-		//m_birds[i + halfSize].Mutate
+		m_birds[i + halfSize]->Mutate();
 		m_birds[i + halfSize]->ResetPosition();
 		m_birds[i]->ResetPosition();
 	}
-
-	// mutate
 
 	for (Bird* b : m_birds)
 	{

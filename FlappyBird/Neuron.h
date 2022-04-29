@@ -34,13 +34,15 @@ public:
 
 	float RandFrom(float min, float max);
 
-	void operator=(Neuron n);
+	void Mutate();
 
 	int GetLayer() { return _currentLayer; }
+
+	void operator=(Neuron n);
 private:
 	std::vector<float> _weights;
-	const float _weightsMin = -0.7f;
-	const float _weightsMax = 0.7f;
+	const float _weightsMin = -1.0f;
+	const float _weightsMax = 1.0f;
 	float _bias;
 	ActivationFunction _activationFunc = ActivationFunction::Sigmoid;
 

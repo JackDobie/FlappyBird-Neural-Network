@@ -4,6 +4,7 @@
 
 #include "DEFINITIONS.hpp"
 #include "Game.hpp"
+#include "NeuralNetwork.h"
 
 #include <vector>
 
@@ -25,6 +26,9 @@ namespace Sonar
 
 		void Tap();
 
+		void Calculate(std::vector<float> inputs);
+		void Mutate();
+
 		const sf::Sprite &GetSprite() const;
 
 		void GetHeight(int& x, int& y);
@@ -34,6 +38,9 @@ namespace Sonar
 
 		bool GetAlive() { return _alive; }
 		void SetAlive(bool alive) { _alive = alive; }
+
+		NeuralNetwork* GetNeuralNetwork() { return _neuralNet; }
+		void SetNeuralNetwork(NeuralNetwork* newNeuralNet) { _neuralNet = newNeuralNet; }
 
 		int _score;
 
@@ -56,5 +63,7 @@ namespace Sonar
 		bool _shouldFlap;
 
 		bool _alive;
+
+		NeuralNetwork* _neuralNet;
 	};
 }

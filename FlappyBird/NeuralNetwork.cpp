@@ -45,3 +45,14 @@ void NeuralNetwork::Calculate(std::vector<float> inputs)
 		}
 	}
 }
+
+void NeuralNetwork::Mutate()
+{
+	for (int i = 0; i < _layers.size(); i++)
+	{
+		for (int j = 0; j < _layers[0].size(); j++)
+		{
+			_layers[i][j].Mutate();
+		}
+	}
+}

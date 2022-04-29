@@ -25,6 +25,8 @@ namespace Sonar
 
 		_shouldFlap = false;
 
+		_neuralNet = new NeuralNetwork();
+
 		_alive = true;
 
 		_score = 0;
@@ -66,8 +68,9 @@ namespace Sonar
 
 	void Bird::Update(float dt)
 	{
-		if (BIRD_STATE_FALLING == _birdState)
+		switch (_birdState)
 		{
+		case BIRD_STATE_FALLING:
 			_birdSprite.move(0, GRAVITY * dt);
 
 			_rotation += ROTATION_SPEED * dt;
@@ -78,11 +81,13 @@ namespace Sonar
 			}
 
 			_birdSprite.setRotation(_rotation);
-		}
-		else if (BIRD_STATE_FLYING == _birdState)
-		{
+			break;
+
+		case BIRD_STATE_FLYING:
 			_birdSprite.move(0, -FLYING_SPEED * dt);
-			if (_birdSprite.getPosition().y < 0) {
+
+			if (_birdSprite.getPosition().y < 0)
+			{
 				sf::Vector2f v = _birdSprite.getPosition();
 				v.y = 0;
 				_birdSprite.setPosition(v);
@@ -96,8 +101,12 @@ namespace Sonar
 			}
 
 			_birdSprite.setRotation(_rotation);
-		}
+			break;
 
+		default:
+			break;
+		}
+		
 		if (_movementClock.getElapsedTime().asSeconds() > FLYING_DURATION)
 		{
 			_movementClock.restart();
@@ -109,6 +118,16 @@ namespace Sonar
 	{
 		_movementClock.restart();
 		_birdState = BIRD_STATE_FLYING;
+	}
+
+	void Bird::Calculate(std::vector<float> inputs)
+	{
+		_neuralNet->Calculate(inputs);
+	}
+
+	void Bird::Mutate()
+	{
+		_neuralNet->Mutate();
 	}
 
 	const sf::Sprite &Bird::GetSprite() const

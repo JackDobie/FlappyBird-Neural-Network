@@ -14,6 +14,8 @@ public:
 
 	void Calculate(std::vector<float> inputs);
 
+	void Mutate();
+
 	std::vector<std::vector<Neuron>> GetLayers() { return _layers; }
 	void SetLayers(std::vector<std::vector<Neuron>> newLayers) { _layers = newLayers; }
 private:

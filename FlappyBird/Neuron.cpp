@@ -2,6 +2,7 @@
 #include <math.h>
 #include <algorithm>
 #include "NeuralNetwork.h"
+#include <iostream>
 
 Neuron::Neuron()
 {
@@ -98,4 +99,20 @@ float Neuron::RandFrom(float min, float max)
 	random = random * (max - min);
 	random += min;
 	return random;
+}
+
+void Neuron::Mutate()
+{
+	for (int i = 0; i < _weights.size(); i++)
+	{
+		_weights[i] = RandFrom(_weightsMin, _weightsMax);
+	}
+}
+
+void Neuron::operator=(Neuron n)
+{
+	_currentLayer = n._currentLayer;
+	_weights = n._weights;
+	_bias = n._bias;
+	_output = n._output;
 }

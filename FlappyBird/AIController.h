@@ -5,7 +5,7 @@
 #include "NeuralNetwork.h"
 using namespace Sonar;
 
-#define BIRD_COUNT 500
+#define BIRD_COUNT 50
 
 class AIController
 {
@@ -33,8 +33,6 @@ private:
 	float DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird);
 
 	GameState*	m_pGameState;
-
-	NeuralNetwork* m_neuralNet;
 
 	std::vector<Bird*> m_birds;
 };

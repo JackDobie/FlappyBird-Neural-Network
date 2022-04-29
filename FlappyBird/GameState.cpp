@@ -54,6 +54,7 @@ namespace Sonar
 		_hud = new HUD(_data);
 
 		_AIController = new AIController(_data);
+		_AIController->SetGameState(this);
 
 		/*for (int i = 0; i < BIRD_COUNT; i++)
 		{
@@ -74,30 +75,8 @@ namespace Sonar
 		{
 			_gameState = GameStates::ePlaying;
 
-			//for (AIController* ai : m_pAIControllers)
-			//{
-			//	ai->Update();
-			//	ai->TryFlap();
-			//	/*if (ai->shouldFlap())
-			//	{
-			//		std::cout << "tap!" << std::endl;
-			//		ai->GetBird()->Tap();
-			//		_wingSound.play();
-			//	}*/
-			//}
-
 			_AIController->Update();
 			_AIController->TryFlap();
-
-			/*if (m_pAIController->shouldFlap())
-			{
-				std::cout << "tap!" << std::endl;
-				bird->Tap();
-				_wingSound.play();
-			}
-			else {
-				std::cout << "---------" << std::endl;
-			}*/
 		}
 
 		sf::Event event;
@@ -165,13 +144,16 @@ namespace Sonar
 				{
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
 					{
-						_hitSound.play();
+						//_hitSound.play();
 						b->_score = _score;
 						b->SetAlive(false);
 					}
 					else
 					{
-						allCollide = false;
+						if (b->GetAlive())
+						{
+							allCollide = false;
+						}
 					}
 				}
 				if (allCollide)
@@ -191,13 +173,16 @@ namespace Sonar
 				{
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
 					{
-						_hitSound.play();
+						//_hitSound.play();
 						b->_score = _score;
 						b->SetAlive(false);
 					}
 					else
 					{
-						allCollide = false;
+						if (b->GetAlive())
+						{
+							allCollide = false;
+						}
 					}
 				}
 				if (allCollide)
@@ -237,12 +222,14 @@ namespace Sonar
 		{
 			_flash->Show(dt);
 
-			if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
+			std::cout << "Generation: " << _generation << "\tScore: " << _score << std::endl;
+			Reset();
+
+			/*if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
 			{
-				// todo: reset aicontroller
+				std::cout << "Score: " << _score << std::endl;
 				Reset();
-				//this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
-			}
+			}*/
 		}
 	}
 

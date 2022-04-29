@@ -49,6 +49,7 @@ namespace Sonar
 		bool _flashOn;
 
 		int _score;
+		int _generation;
 
 		sf::SoundBuffer _hitSoundBuffer;
 		sf::SoundBuffer _wingSoundBuffer;
