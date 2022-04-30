@@ -8,49 +8,55 @@ using namespace std;
 
 AIController::AIController(GameDataRef data)
 {
-	m_pGameState = nullptr;
+	_gameState = nullptr;
 
 	for (int i = 0; i < BIRD_COUNT; i++)
 	{
-		m_birds.push_back(new Bird(data));
+		_birds.push_back(new Bird(data));
 	}
 }
 
 AIController::~AIController()
 {
-
+	for (Bird* b : _birds)
+	{
+		delete(b);
+	}
+	_birds.clear();
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
 // set m_bShouldFlap to true or false.
 void AIController::Update()
 {
-	if (m_pGameState == nullptr)
+	if (_gameState == nullptr)
 		return;
 
-	Pipe* pipe = m_pGameState->GetPipeContainer();
-	Land* land = m_pGameState->GetLandContainer();
+	Pipe* pipe = _gameState->GetPipeContainer();
+	Land* land = _gameState->GetLandContainer();
 
-	for (Bird* b : m_birds)
+	for (Bird* b : _birds)
 	{
+		if (!b->GetAlive())
+			continue;
+
 		float fDistanceToFloor = DistanceToFloor(land, b);
 
 		float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, b);
 
-		if (fDistanceToNearestPipe != ERROR_DISTANCE) {
-			float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
+		//if (fDistanceToNearestPipe != ERROR_DISTANCE) {
+		float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
 
-			b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
-		}
-		else
-		{
-			b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe });
-		}
+		b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
+		//}
+		//else
+		//{
+		//	b->Calculate({ fDistanceToFloor });
+		//}
 
 		if (b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput() >= 0.5f)
 		{
 			b->SetShouldFlap(true);
-			std::cout << b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput() << std::endl;
 		}
 	}
 
@@ -138,7 +144,7 @@ float AIController::DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 
 void AIController::TryFlap()
 {
-	for (Bird* b : m_birds)
+	for (Bird* b : _birds)
 	{
 		// check if b needs to flap, then flap and set to false
 		if (b->GetShouldFlap())
@@ -152,21 +158,30 @@ void AIController::TryFlap()
 void AIController::Reset()
 {
 	// sort birds by score
-	sort(m_birds.begin(), m_birds.end(),
+	sort(_birds.begin(), _birds.end(),
 		[](const Bird* lhs, const Bird* rhs)
 		{ return lhs->_score < rhs->_score; });
 
-	int halfSize = m_birds.size() / 2;
-	for (int i = 0; i < halfSize; i++)
+	for (Bird* b : _birds)
 	{
-		m_birds[i + halfSize] = m_birds[i];
-		m_birds[i + halfSize]->Mutate();
-		m_birds[i + halfSize]->ResetPosition();
-		m_birds[i]->ResetPosition();
+		if (b->_score == _birds.back()->_score)
+		{
+			b->Mutate();
+		}
 	}
 
-	for (Bird* b : m_birds)
+	/*int halfSize = _birds.size() / 2;
+	for (int i = 0; i < halfSize; i++)
 	{
+		_birds[i + halfSize] = _birds[i];
+		_birds[i + halfSize]->Mutate();
+		_birds[i + halfSize]->ResetPosition();
+		_birds[i]->ResetPosition();
+	}*/
+
+	for (Bird* b : _birds)
+	{
+		b->ResetPosition();
 		b->_score = 0;
 		b->SetAlive(true);
 	}
@@ -174,7 +189,7 @@ void AIController::Reset()
 
 void AIController::UpdateScore(int score)
 {
-	for (Bird* b : m_birds)
+	for (Bird* b : _birds)
 	{
 		b->_score = score;
 	}

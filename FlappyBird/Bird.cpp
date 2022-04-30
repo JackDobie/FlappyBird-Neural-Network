@@ -44,7 +44,8 @@ namespace Sonar
 
 	void Bird::Draw()
 	{
-		_data->window.draw(_birdSprite);
+		if(_alive)
+			_data->window.draw(_birdSprite);
 	}
 
 	void Bird::Animate(float dt)

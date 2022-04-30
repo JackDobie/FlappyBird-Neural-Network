@@ -14,6 +14,8 @@ namespace Sonar
 		void MoveLand(float dt);
 		void DrawLand();
 
+		void Reset();
+
 		const std::vector<sf::Sprite> &GetSprites() const;
 
 	private:

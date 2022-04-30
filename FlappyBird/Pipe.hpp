@@ -19,13 +19,15 @@ namespace Sonar
 		void DrawPipes();
 		void RandomisePipeOffset();
 
+		void Reset();
+
 		const std::vector<sf::Sprite> &GetSprites() const;
 		std::vector<sf::Sprite> &GetScoringSprites();
 
 	private:
 		GameDataRef _data;
-		std::vector<sf::Sprite> pipeSprites;
-		std::vector<sf::Sprite> scoringPipes;
+		std::vector<sf::Sprite> _pipeSprites;
+		std::vector<sf::Sprite> _scoringPipes;
 
 		int _landHeight;
 		int _pipeSpawnYOffset;

@@ -7,6 +7,8 @@ namespace Sonar
 {
 	Pipe::Pipe(GameDataRef data) : _data(data)
 	{
+		// seed rand so always have same pipe positions
+		srand(1);
 		_landHeight = this->_data->assets.GetTexture("Land").getSize().y;
 		_pipeSpawnYOffset = 0;
 	}
@@ -17,7 +19,7 @@ namespace Sonar
 
 		sprite.setPosition((float)this->_data->window.getSize().x, (float)this->_data->window.getSize().y - sprite.getLocalBounds().height - _pipeSpawnYOffset);
 
-		pipeSprites.push_back(sprite);
+		_pipeSprites.push_back(sprite);
 	}
 
 	void Pipe::SpawnTopPipe()
@@ -26,7 +28,7 @@ namespace Sonar
 
 		sprite.setPosition((float)this->_data->window.getSize().x, (float)-_pipeSpawnYOffset);
 
-		pipeSprites.push_back(sprite);
+		_pipeSprites.push_back(sprite);
 	}
 
 	void Pipe::SpawnInvisiblePipe()
@@ -36,7 +38,7 @@ namespace Sonar
 		sprite.setPosition((float)this->_data->window.getSize().x, (float)-_pipeSpawnYOffset);
 		sprite.setColor(sf::Color(0, 0, 0, 0));
 
-		pipeSprites.push_back(sprite);
+		_pipeSprites.push_back(sprite);
 	}
 
 	void Pipe::SpawnScoringPipe()
@@ -45,47 +47,47 @@ namespace Sonar
 
 		sprite.setPosition((float)this->_data->window.getSize().x, 0);
 
-		scoringPipes.push_back(sprite);
+		_scoringPipes.push_back(sprite);
 	}
 
 	void Pipe::MovePipes(float dt)
 	{
-		for ( unsigned int i = 0; i < pipeSprites.size(); i++)
+		for ( unsigned int i = 0; i < _pipeSprites.size(); i++)
 		{
-			if (pipeSprites.at(i).getPosition().x < 0 - pipeSprites.at(i).getLocalBounds().width)
+			if (_pipeSprites.at(i).getPosition().x < 0 - _pipeSprites.at(i).getLocalBounds().width)
 			{
-				pipeSprites.erase( pipeSprites.begin( ) + i );
+				_pipeSprites.erase( _pipeSprites.begin( ) + i );
 			}
 			else
 			{
-				sf::Vector2f position = pipeSprites.at(i).getPosition();
+				sf::Vector2f position = _pipeSprites.at(i).getPosition();
 				float movement = PIPE_MOVEMENT_SPEED * dt;
 
-				pipeSprites.at(i).move(-movement, 0);
+				_pipeSprites.at(i).move(-movement, 0);
 			}
 		}
 
-		for (unsigned int i = 0; i < scoringPipes.size(); i++)
+		for (unsigned int i = 0; i < _scoringPipes.size(); i++)
 		{
-			if (scoringPipes.at(i).getPosition().x < 0 - scoringPipes.at(i).getLocalBounds().width)
+			if (_scoringPipes.at(i).getPosition().x < 0 - _scoringPipes.at(i).getLocalBounds().width)
 			{
-				scoringPipes.erase(scoringPipes.begin() + i);
+				_scoringPipes.erase(_scoringPipes.begin() + i);
 			}
 			else
 			{
-				sf::Vector2f position = scoringPipes.at(i).getPosition();
+				sf::Vector2f position = _scoringPipes.at(i).getPosition();
 				float movement = PIPE_MOVEMENT_SPEED * dt;
 
-				scoringPipes.at(i).move(-movement, 0);
+				_scoringPipes.at(i).move(-movement, 0);
 			}
 		}
 	}
 
 	void Pipe::DrawPipes()
 	{
-		for (unsigned short int i = 0; i < pipeSprites.size(); i++)
+		for (unsigned short int i = 0; i < _pipeSprites.size(); i++)
 		{
-			this->_data->window.draw(pipeSprites.at(i));
+			this->_data->window.draw(_pipeSprites.at(i));
 		}
 	}
 
@@ -94,13 +96,21 @@ namespace Sonar
 		_pipeSpawnYOffset = rand() % (_landHeight + 1);
 	}
 
+	void Pipe::Reset()
+	{
+		srand(1);
+		_pipeSpawnYOffset = 0;
+		_pipeSprites.clear();
+		_scoringPipes.clear();
+	}
+
 	const std::vector<sf::Sprite> &Pipe::GetSprites() const
 	{
-		return pipeSprites;
+		return _pipeSprites;
 	}
 
 	std::vector<sf::Sprite> &Pipe::GetScoringSprites()
 	{
-		return scoringPipes;
+		return _scoringPipes;
 	}
 }

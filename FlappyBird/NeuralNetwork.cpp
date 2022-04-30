@@ -24,7 +24,11 @@ NeuralNetwork::NeuralNetwork()
 
 NeuralNetwork::~NeuralNetwork()
 {
-
+	for (int i = 0; i < _layers.size(); i++)
+	{
+		_layers[i].clear();
+	}
+	_layers.clear();
 }
 
 void NeuralNetwork::Calculate(std::vector<float> inputs)

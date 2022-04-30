@@ -12,8 +12,7 @@ namespace Sonar
 {
 	GameState::GameState(GameDataRef data) : _data(data)
 	{
-		//m_pAIController = new AIController();
-		//m_pAIController->setGameState(this);
+		Init();
 	}
 
 	void GameState::Init()
@@ -55,11 +54,6 @@ namespace Sonar
 
 		_AIController = new AIController(_data);
 		_AIController->SetGameState(this);
-
-		/*for (int i = 0; i < BIRD_COUNT; i++)
-		{
-			m_pAIControllers.push_back(new AIController(new Bird(_data)));
-		}*/
 
 		_background.setTexture(this->_data->assets.GetTexture("Game Background"));
 
@@ -256,14 +250,19 @@ namespace Sonar
 
 	void GameState::Reset()
 	{
-		_pipe = new Pipe(_data);
-		_land = new Land(_data);
-		_flash = new Flash(_data);
+		//_pipe = new Pipe(_data);
+		//_land = new Land(_data);
+		//_flash = new Flash(_data);
+		
 		_hud = new HUD(_data);
+
+		_pipe->Reset();
+		_land->Reset();
 
 		_score = 0;
 		_hud->UpdateScore(_score);
 		_AIController->Reset();
 		_gameState = GameStates::eReady;
+		srand(time(NULL));
 	}
 }

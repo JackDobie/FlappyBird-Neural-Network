@@ -13,7 +13,7 @@ public:
 	AIController(GameDataRef data);
 	~AIController();
 
-	void SetGameState(GameState* pGameState) { m_pGameState = pGameState; }
+	void SetGameState(GameState* pGameState) { _gameState = pGameState; }
 	void Update();
 	// note when this is called, it resets the flap state
 	//bool shouldFlap();
@@ -21,7 +21,7 @@ public:
 	void TryFlap();
 
 	//Bird* GetBird() { return m_bird; }
-	std::vector<Bird*> GetBirds() { return m_birds; }
+	std::vector<Bird*> GetBirds() { return _birds; }
 
 	void Reset();
 
@@ -32,8 +32,8 @@ private:
 	float DistanceToNearestPipes(Pipe* pipe, Bird* bird);
 	float DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird);
 
-	GameState*	m_pGameState;
+	GameState*	_gameState;
 
-	std::vector<Bird*> m_birds;
+	std::vector<Bird*> _birds;
 };
 

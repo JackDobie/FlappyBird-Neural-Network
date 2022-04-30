@@ -15,6 +15,8 @@ namespace Sonar
 		void Show(float dt);
 		void Draw();
 
+		void Reset();
+
 	private:
 		GameDataRef _data;
 

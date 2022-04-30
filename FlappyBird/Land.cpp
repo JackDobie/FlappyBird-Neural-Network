@@ -41,6 +41,14 @@ namespace Sonar
 		}
 	}
 
+	void Land::Reset()
+	{
+		// sprite
+		_landSprites[0].setPosition(0, this->_data->window.getSize().y - _landSprites[0].getLocalBounds().height);
+		// sprite2
+		_landSprites[1].setPosition(_landSprites[0].getLocalBounds().width, this->_data->window.getSize().y - _landSprites[1].getLocalBounds().height);
+	}
+
 	const std::vector<sf::Sprite> &Land::GetSprites() const
 	{
 		return _landSprites;

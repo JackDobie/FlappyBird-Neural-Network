@@ -7,7 +7,7 @@ namespace Sonar
 		_shape = sf::RectangleShape(sf::Vector2f((float)_data->window.getSize().x, (float)_data->window.getSize().y));
 		_shape.setFillColor(sf::Color(255, 255, 255, 0));
 
-		_flashOn = true;
+		_flashOn = false;
 	}
 
 	Flash::~Flash()
@@ -44,5 +44,10 @@ namespace Sonar
 	void Flash::Draw()
 	{
 		_data->window.draw(_shape);
+	}
+
+	void Flash::Reset()
+	{
+
 	}
 }

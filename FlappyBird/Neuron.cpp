@@ -26,6 +26,7 @@ Neuron::Neuron(int layerIndex, int prevLayerSize)
 
 Neuron::~Neuron()
 {
+	_weights.clear();
 }
 
 float Neuron::Calculate(NeuralNetwork network)
@@ -33,9 +34,10 @@ float Neuron::Calculate(NeuralNetwork network)
 	_output = 0.0f;
 
 	// use previous layers outputs as inputs
-	for (int i = 0; i < network.GetLayers()[_currentLayer - 1].size(); i++)
+	std::vector<Neuron> prevlayer = network.GetLayers()[_currentLayer - 1];
+	for (int i = 0; i < prevlayer.size(); i++)
 	{
-		_output += network.GetLayers()[_currentLayer - 1][i]._output * _weights[i];
+		_output += prevlayer[i]._output * _weights[i];
 	}
 	_output += _bias;
 
@@ -53,35 +55,6 @@ float Neuron::Calculate(NeuralNetwork network)
 
 	return _output;
 }
-
-//float Neuron::Calculate(std::vector<float> inputs)
-//{
-//	_weights = std::vector<float>(inputs.size());
-//	for (int i = 0; i < inputs.size(); i++)
-//	{
-//		float random = ((float)rand()) / (float)RAND_MAX;
-//		random = random * (_weightsMax - _weightsMin);
-//		random += _weightsMin;
-//		_weights[i] = random;
-//	}
-//
-//	float sum = 0;
-//	for (int i = 0; i < inputs.size(); i++)
-//	{
-//		sum += (inputs[i] * _weights[i]);
-//	}
-//	switch (_activationFunc)
-//	{
-//	case ActivationFunction::Identity:
-//		return sum;
-//	case ActivationFunction::Sigmoid:
-//		return Sigmoid(sum);
-//	case ActivationFunction::ReLu:
-//		return ReLu(sum);
-//	default:
-//		return sum;
-//	}
-//}
 
 float Neuron::Sigmoid(float value)
 {

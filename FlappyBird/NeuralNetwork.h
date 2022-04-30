@@ -3,8 +3,8 @@
 #include <vector>
 #include "Neuron.h"
 
-#define NN_LAYERS 4
-#define NN_NEURONS 1
+#define NN_LAYERS 2
+#define NN_NEURONS 3
 
 class NeuralNetwork
 {
