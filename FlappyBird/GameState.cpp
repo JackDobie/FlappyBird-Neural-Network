@@ -131,6 +131,7 @@ namespace Sonar
 
 			std::vector<sf::Sprite> landSprites = _land->GetSprites();
 
+			// collide with ground
 			for (unsigned int i = 0; i < landSprites.size(); i++)
 			{
 				bool allCollide = true;
@@ -160,6 +161,7 @@ namespace Sonar
 
 			std::vector<sf::Sprite> pipeSprites = _pipe->GetSprites();
 
+			// collide with pipes
 			for (unsigned int i = 0; i < pipeSprites.size(); i++)
 			{
 				bool allCollide = true;
@@ -260,7 +262,16 @@ namespace Sonar
 		srand(time(NULL));
 
 		_score = 0;
+		
 		_AIController->Reset();
+		/*std::vector<Bird*> oldBirds = _AIController->GetBirds();
+		_AIController = new AIController(_data);
+		_AIController->SetBirds(oldBirds);
+		for (Bird* b : _AIController->GetBirds())
+		{
+			b->Reset();
+		}*/
+
 		_gameState = GameStates::eReady;
 		_generation++;
 

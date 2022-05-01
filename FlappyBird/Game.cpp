@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <iostream>
 
 
 namespace Sonar
@@ -32,24 +33,35 @@ namespace Sonar
 			newTime = this->_clock.getElapsedTime().asSeconds();
 			frameTime = newTime - currentTime;
 
-			if (frameTime > 0.25f)
-			{
-				frameTime = 0.25f;
-			}
+			//if (frameTime > 0.25f)
+			//{
+			//	frameTime = 0.25f;
+			//}
+
+			//currentTime = newTime;
+			//accumulator += frameTime;
+
+			//while (accumulator >= dt)
+			//{
+			//	this->_data->machine.GetActiveState()->HandleInput();
+			//	this->_data->machine.GetActiveState()->Update(dt);
+
+			//	accumulator -= dt;
+			//}
+			//
+			//interpolation = accumulator / dt;
+			//this->_data->machine.GetActiveState()->Draw(interpolation);
+
+			if (frameTime < dt)
+				continue;
 
 			currentTime = newTime;
-			accumulator += frameTime;
 
-			while (accumulator >= dt)
-			{
-				this->_data->machine.GetActiveState()->HandleInput();
-				this->_data->machine.GetActiveState()->Update(dt);
+			this->_data->machine.GetActiveState()->HandleInput();
+			this->_data->machine.GetActiveState()->Update(frameTime);
+			this->_data->machine.GetActiveState()->Draw(frameTime);
 
-				accumulator -= dt;
-			}
-
-			interpolation = accumulator / dt;
-			this->_data->machine.GetActiveState()->Draw(interpolation);
+			//std::cout << frameTime << std::endl;
 		}
 	}
 }

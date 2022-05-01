@@ -55,7 +55,7 @@
 
 #define ROTATION_SPEED (100.0f * TIME_SCALE)
 
-#define TIME_SCALE 1.0f
+#define TIME_SCALE 5.0f
 
 enum GameStates
 {

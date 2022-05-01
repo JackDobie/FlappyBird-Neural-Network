@@ -58,7 +58,7 @@ void AIController::Update()
 
 		b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
 
-		float output = b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput();
+		float output = b->GetNeuralNetwork().GetLayers().back()[0].GetOutput();
 		if (output >= 0.5f)
 		{
 			b->SetShouldFlap(true);
@@ -174,11 +174,18 @@ void AIController::Reset()
 		[](const Bird* lhs, const Bird* rhs)
 		{ return lhs->_score < rhs->_score; });
 
+	// split birds in half, birds in first half (better scoring) are mutated
 	int halfSize = _birds.size() / 2;
 	for (int i = 0; i < halfSize; i++)
 	{
-		_birds[i + halfSize] = _birds[i];
+		//_birds[i + halfSize]->SetNeuralNetwork(_birds[i]->GetNeuralNetwork());
 		_birds[i + halfSize]->Mutate();
+
+		// if scores are same because first half was also bad, mutate that too
+		if (_birds[i]->_score == _birds[i + halfSize]->_score)
+		{
+			_birds[i]->Mutate();
+		}
 	}
 
 	for (Bird* b : _birds)

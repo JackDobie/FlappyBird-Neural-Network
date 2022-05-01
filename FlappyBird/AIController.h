@@ -5,7 +5,7 @@
 #include "NeuralNetwork.h"
 using namespace Sonar;
 
-#define BIRD_COUNT 50
+#define BIRD_COUNT 200
 
 class AIController
 {
@@ -15,13 +15,11 @@ public:
 
 	void SetGameState(GameState* pGameState) { _gameState = pGameState; }
 	void Update();
-	// note when this is called, it resets the flap state
-	//bool shouldFlap();
 
 	void TryFlap();
 
-	//Bird* GetBird() { return m_bird; }
 	std::vector<Bird*> GetBirds() { return _birds; }
+	void SetBirds(std::vector<Bird*> newBirds) { _birds = newBirds; }
 
 	void Reset();
 

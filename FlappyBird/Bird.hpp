@@ -39,8 +39,8 @@ namespace Sonar
 		bool GetAlive() { return _alive; }
 		void SetAlive(bool alive) { _alive = alive; }
 
-		NeuralNetwork* GetNeuralNetwork() { return _neuralNet; }
-		void SetNeuralNetwork(NeuralNetwork* newNeuralNet) { _neuralNet = newNeuralNet; }
+		NeuralNetwork GetNeuralNetwork() { return _neuralNet; }
+		void SetNeuralNetwork(NeuralNetwork newNeuralNet) { _neuralNet = newNeuralNet; }
 
 		int _score;
 
@@ -64,6 +64,6 @@ namespace Sonar
 
 		bool _alive;
 
-		NeuralNetwork* _neuralNet;
+		NeuralNetwork _neuralNet;
 	};
 }
