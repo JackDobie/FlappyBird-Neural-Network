@@ -1,4 +1,5 @@
 #include "Bird.hpp"
+#include <iostream>
 
 namespace Sonar
 {
@@ -36,10 +37,17 @@ namespace Sonar
 	{
 	}
 
-	void Bird::ResetPosition()
+	void Bird::Reset()
 	{
+		_animationIterator = 0;
+		_birdSprite.setTexture(_animationFrames.at(_animationIterator));
 		_birdSprite.setPosition((_data->window.getSize().x / 4) - (_birdSprite.getGlobalBounds().width / 2), (_data->window.getSize().y / 2) - (_birdSprite.getGlobalBounds().height / 2));
 		_rotation = 0;
+		_shouldFlap = false;
+		_alive = true;
+		_score = 0;
+		_movementClock.restart();
+		_birdState = BIRD_STATE_STILL;
 	}
 
 	void Bird::Draw()
@@ -69,9 +77,11 @@ namespace Sonar
 
 	void Bird::Update(float dt)
 	{
+		static int it = 0;
 		switch (_birdState)
 		{
 		case BIRD_STATE_FALLING:
+			it = 0;
 			_birdSprite.move(0, GRAVITY * dt);
 
 			_rotation += ROTATION_SPEED * dt;
@@ -85,6 +95,7 @@ namespace Sonar
 			break;
 
 		case BIRD_STATE_FLYING:
+			std::cout << it++ << std::endl;
 			_birdSprite.move(0, -FLYING_SPEED * dt);
 
 			if (_birdSprite.getPosition().y < 0)

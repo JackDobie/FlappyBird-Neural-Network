@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#define NN_INPUTS 3
-
 enum class ActivationFunction
 {
 	Identity = 0,
@@ -33,6 +31,7 @@ public:
 	void SetOutput(float newOutput) { _output = newOutput; }
 
 	float RandFrom(float min, float max);
+	float RandInRange(float val, float range);
 
 	void Mutate();
 

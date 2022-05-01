@@ -3,7 +3,7 @@
 #include <sstream>
 #include "SplashState.hpp"
 #include "DEFINITIONS.hpp"
-#include "MainMenuState.hpp"
+#include "GameState.hpp"
 
 #include <iostream>
 
@@ -39,7 +39,7 @@ namespace Sonar
 		if (this->_clock.getElapsedTime().asSeconds() > SPLASH_STATE_SHOW_TIME)
 		{
 			// Switch To Main Menu
-			this->_data->machine.AddState(StateRef(new MainMenuState(_data)), true);
+			this->_data->machine.AddState(StateRef(new GameState(_data)), true);
 		}
 	}
 

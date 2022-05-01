@@ -7,8 +7,6 @@ namespace Sonar
 {
 	Pipe::Pipe(GameDataRef data) : _data(data)
 	{
-		// seed rand so always have same pipe positions
-		srand(1);
 		_landHeight = this->_data->assets.GetTexture("Land").getSize().y;
 		_pipeSpawnYOffset = 0;
 	}
@@ -98,7 +96,6 @@ namespace Sonar
 
 	void Pipe::Reset()
 	{
-		srand(1);
 		_pipeSpawnYOffset = 0;
 		_pipeSprites.clear();
 		_scoringPipes.clear();

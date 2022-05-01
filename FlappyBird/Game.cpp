@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "SplashState.hpp"
+#include "GameState.hpp"
 
 #include <stdlib.h>
 #include <time.h>
@@ -12,7 +12,8 @@ namespace Sonar
 		srand((unsigned int)time(NULL));
 
 		_data->window.create(sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titlebar);
-		_data->machine.AddState(StateRef(new SplashState(this->_data)));
+		//_data->machine.AddState(StateRef(new SplashState(this->_data)));
+		_data->machine.AddState(StateRef(new GameState(this->_data)));
 
 		this->Run();
 	}

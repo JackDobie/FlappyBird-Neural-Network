@@ -74,11 +74,22 @@ float Neuron::RandFrom(float min, float max)
 	return random;
 }
 
+float Neuron::RandInRange(float val, float range)
+{
+	float halfRange = range * 0.5f;
+	float min = range - halfRange;
+	float max = range + halfRange;
+	min = min < _weightsMin ? _weightsMin : min;
+	max = max > _weightsMax ? _weightsMax : max;
+	return RandFrom(min, max);
+}
+
 void Neuron::Mutate()
 {
 	for (int i = 0; i < _weights.size(); i++)
 	{
-		_weights[i] = RandFrom(_weightsMin, _weightsMax);
+		//_weights[i] = RandFrom(_weightsMin, _weightsMax);
+		_weights[i] = RandInRange(_weights[i], 0.5f);
 	}
 }
 

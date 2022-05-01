@@ -9,7 +9,7 @@
 #include "Land.hpp"
 #include "Bird.hpp"
 #include "Collision.hpp"
-#include "Flash.hpp"
+//#include "Flash.hpp"
 #include "HUD.hpp"
 
 class AIController;
@@ -38,10 +38,10 @@ namespace Sonar
 		Pipe* _pipe;
 		Land* _land;
 		Collision _collision;
-		Flash* _flash;
+		//Flash* _flash;
 		HUD* _hud;
 
-		sf::Clock clock;
+		sf::Clock _clock;
 
 		int _gameState;
 

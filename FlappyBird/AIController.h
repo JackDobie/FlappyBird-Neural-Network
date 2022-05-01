@@ -25,8 +25,6 @@ public:
 
 	void Reset();
 
-	void UpdateScore(int score);
-
 private:
 	float DistanceToFloor(Land* land, Bird* bird);
 	float DistanceToNearestPipes(Pipe* pipe, Bird* bird);

@@ -3,7 +3,6 @@
 #include <sstream>
 #include "DEFINITIONS.hpp"
 #include "GameState.hpp"
-#include "GameOverState.hpp"
 #include "AIController.h"
 
 #include <iostream>
@@ -49,7 +48,7 @@ namespace Sonar
 
 		_pipe = new Pipe(_data);
 		_land = new Land(_data);
-		_flash = new Flash(_data);
+		//_flash = new Flash(_data);
 		_hud = new HUD(_data);
 
 		_AIController = new AIController(_data);
@@ -81,6 +80,7 @@ namespace Sonar
 				this->_data->window.close();
 			}
 
+			// player tap
 			if (this->_data->input.IsSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
 			{
 				if (GameStates::eGameOver != _gameState)
@@ -109,7 +109,7 @@ namespace Sonar
 		{
 			_pipe->MovePipes(dt);
 
-			if (clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
+			if (_clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
 			{
 				_pipe->RandomisePipeOffset();
 
@@ -118,7 +118,7 @@ namespace Sonar
 				_pipe->SpawnTopPipe();
 				_pipe->SpawnScoringPipe();
 
-				clock.restart();
+				_clock.restart();
 			}
 
 			for (Bird* b : _AIController->GetBirds())
@@ -136,6 +136,9 @@ namespace Sonar
 				bool allCollide = true;
 				for (Bird* b : _AIController->GetBirds())
 				{
+					if (!b->GetAlive())
+						continue;
+
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
 					{
 						//_hitSound.play();
@@ -144,17 +147,14 @@ namespace Sonar
 					}
 					else
 					{
-						if (b->GetAlive())
-						{
-							allCollide = false;
-						}
+						allCollide = false;
 					}
 				}
 				if (allCollide)
 				{
 					_gameState = GameStates::eGameOver;
 
-					clock.restart();
+					_clock.restart();
 				}
 			}
 
@@ -165,6 +165,9 @@ namespace Sonar
 				bool allCollide = true;
 				for (Bird* b : _AIController->GetBirds())
 				{
+					if (!b->GetAlive())
+						continue;
+
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
 					{
 						//_hitSound.play();
@@ -173,17 +176,14 @@ namespace Sonar
 					}
 					else
 					{
-						if (b->GetAlive())
-						{
-							allCollide = false;
-						}
+						allCollide = false;
 					}
 				}
 				if (allCollide)
 				{
 					_gameState = GameStates::eGameOver;
 
-					clock.restart();
+					_clock.restart();
 				}
 			}
 
@@ -199,13 +199,11 @@ namespace Sonar
 						{
 							_score++;
 
-							_AIController->UpdateScore(_score);
-
 							_hud->UpdateScore(_score);
 
 							scoringSprites.erase(scoringSprites.begin() + i);
 
-							_pointSound.play();
+							//_pointSound.play();
 						}
 					}
 				}
@@ -214,9 +212,9 @@ namespace Sonar
 
 		if (GameStates::eGameOver == _gameState)
 		{
-			_flash->Show(dt);
+			//_flash->Show(dt);
 
-			std::cout << "Generation: " << _generation << "\tScore: " << _score << std::endl;
+			std::cout << "Generation: " << _generation + 1 << "\tScore: " << _score << std::endl;
 			Reset();
 
 			/*if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
@@ -241,7 +239,7 @@ namespace Sonar
 			b->Draw();
 		}
 
-		_flash->Draw();
+		//_flash->Draw();
 
 		_hud->Draw();
 
@@ -250,19 +248,22 @@ namespace Sonar
 
 	void GameState::Reset()
 	{
-		//_pipe = new Pipe(_data);
-		//_land = new Land(_data);
-		//_flash = new Flash(_data);
-		
+		delete(_hud);
 		_hud = new HUD(_data);
+		_hud->UpdateScore(_score);
 
 		_pipe->Reset();
 		_land->Reset();
+		/*_pipe = new Pipe(_data);
+		_land = new Land(_data);*/
+
+		srand(time(NULL));
 
 		_score = 0;
-		_hud->UpdateScore(_score);
 		_AIController->Reset();
 		_gameState = GameStates::eReady;
-		srand(time(NULL));
+		_generation++;
+
+		srand(1);
 	}
 }

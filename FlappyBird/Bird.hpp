@@ -16,7 +16,7 @@ namespace Sonar
 		Bird(GameDataRef data);
 		~Bird();
 
-		void ResetPosition();
+		void Reset();
 
 		void Draw();
 

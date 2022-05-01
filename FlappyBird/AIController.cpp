@@ -10,10 +10,14 @@ AIController::AIController(GameDataRef data)
 {
 	_gameState = nullptr;
 
+	srand(time(NULL));
+
 	for (int i = 0; i < BIRD_COUNT; i++)
 	{
 		_birds.push_back(new Bird(data));
 	}
+
+	srand(1);
 }
 
 AIController::~AIController()
@@ -43,20 +47,26 @@ void AIController::Update()
 		float fDistanceToFloor = DistanceToFloor(land, b);
 
 		float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, b);
-
 		//if (fDistanceToNearestPipe != ERROR_DISTANCE) {
+
+		if (fDistanceToNearestPipe == ERROR_DISTANCE)
+		{
+			fDistanceToNearestPipe = 0;
+		}
+
 		float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
 
 		b->Calculate({ fDistanceToFloor, fDistanceToNearestPipe, fDistanceToCentreOfGap });
-		//}
-		//else
-		//{
-		//	b->Calculate({ fDistanceToFloor });
-		//}
 
-		if (b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput() >= 0.5f)
+		float output = b->GetNeuralNetwork()->GetLayers().back()[0].GetOutput();
+		if (output >= 0.5f)
 		{
 			b->SetShouldFlap(true);
+			//std::cout << output << std::endl;
+		}
+		else
+		{
+			//std::cout << output << std::endl;
 		}
 	}
 
@@ -73,7 +83,7 @@ float AIController::DistanceToFloor(Land* land, Bird* bird)
 		return landSprites.at(0).getPosition().y - bird->GetSprite().getPosition().y;
 	}
 
-	return ERROR_DISTANCE; // this is an error but also means 
+	return ERROR_DISTANCE;
 }
 
 float AIController::DistanceToNearestPipes(Pipe* pipe, Bird* bird)
@@ -83,10 +93,12 @@ float AIController::DistanceToNearestPipes(Pipe* pipe, Bird* bird)
 
 	// get nearest pipes
 	std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
-	for (unsigned int i = 0; i < pipeSprites.size(); i++) {
+	for (unsigned int i = 0; i < pipeSprites.size(); i++)
+	{
 		sf::Sprite s = pipeSprites.at(i);
 		float fDistance = s.getPosition().x - bird->GetSprite().getPosition().x;
-		if (fDistance > 0 && fDistance < nearest1) {
+		if (fDistance > 0 && fDistance < nearest1)
+		{
 			nearestSprite1 = &(pipeSprites.at(i));
 			nearest1 = fDistance;
 		}
@@ -157,40 +169,20 @@ void AIController::TryFlap()
 
 void AIController::Reset()
 {
-	// sort birds by score
-	sort(_birds.begin(), _birds.end(),
+	// sort birds by score descending
+	sort(_birds.rbegin(), _birds.rend(),
 		[](const Bird* lhs, const Bird* rhs)
 		{ return lhs->_score < rhs->_score; });
 
-	for (Bird* b : _birds)
-	{
-		if (b->_score == _birds.back()->_score)
-		{
-			b->Mutate();
-		}
-	}
-
-	/*int halfSize = _birds.size() / 2;
+	int halfSize = _birds.size() / 2;
 	for (int i = 0; i < halfSize; i++)
 	{
 		_birds[i + halfSize] = _birds[i];
 		_birds[i + halfSize]->Mutate();
-		_birds[i + halfSize]->ResetPosition();
-		_birds[i]->ResetPosition();
-	}*/
-
-	for (Bird* b : _birds)
-	{
-		b->ResetPosition();
-		b->_score = 0;
-		b->SetAlive(true);
 	}
-}
 
-void AIController::UpdateScore(int score)
-{
 	for (Bird* b : _birds)
 	{
-		b->_score = score;
+		b->Reset();
 	}
 }
