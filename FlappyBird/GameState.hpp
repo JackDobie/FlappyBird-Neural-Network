@@ -9,8 +9,8 @@
 #include "Land.hpp"
 #include "Bird.hpp"
 #include "Collision.hpp"
-//#include "Flash.hpp"
 #include "HUD.hpp"
+#include "GA.h"
 
 class AIController;
 
@@ -31,6 +31,8 @@ namespace Sonar
 		Land* GetLandContainer() { return _land; };
 
 	private:
+		void Reset();
+
 		GameDataRef _data;
 
 		sf::Sprite _background;
@@ -61,6 +63,6 @@ namespace Sonar
 
 		AIController* _AIController;
 
-		void Reset();
+		GA* _GA;
 	};
 }

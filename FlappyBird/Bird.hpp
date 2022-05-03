@@ -5,6 +5,7 @@
 #include "DEFINITIONS.hpp"
 #include "Game.hpp"
 #include "NeuralNetwork.h"
+#include "GA.h"
 
 #include <vector>
 
@@ -13,7 +14,7 @@ namespace Sonar
 	class Bird
 	{
 	public:
-		Bird(GameDataRef data);
+		Bird(GameDataRef data, chrom* c);
 		~Bird();
 
 		void Reset();
@@ -27,7 +28,7 @@ namespace Sonar
 		void Tap();
 
 		void Calculate(std::vector<float> inputs);
-		void Mutate();
+		//void Mutate();
 
 		const sf::Sprite &GetSprite() const;
 
@@ -39,10 +40,19 @@ namespace Sonar
 		bool GetAlive() { return _alive; }
 		void SetAlive(bool alive) { _alive = alive; }
 
-		NeuralNetwork GetNeuralNetwork() { return _neuralNet; }
-		void SetNeuralNetwork(NeuralNetwork newNeuralNet) { _neuralNet = newNeuralNet; }
+		/*NeuralNetwork* pGetNeuralNetwork() { return &_neuralNet; }
+		NeuralNetwork GetNeuralNetwork() { return _neuralNet; }*/
+		float GetNNOutput() { return _neuralNet->GetLayers().back()[0].GetOutput(); }
+		void SetNeuralNetwork(NeuralNetwork* newNeuralNet) { _neuralNet = newNeuralNet; }
 
-		int _score;
+		chrom* pGetChrom() { return _chrom; }
+		chrom GetChrom() { return *_chrom; }
+		void SetChrom(chrom* newChrom) { _chrom = newChrom; }
+
+		void SetScore(int newScore) { _chrom->_score = newScore; }
+		int GetScore() { return _chrom->_score; }
+
+		//int _score;
 
 	private:
 		GameDataRef _data;
@@ -64,6 +74,8 @@ namespace Sonar
 
 		bool _alive;
 
-		NeuralNetwork _neuralNet;
+		NeuralNetwork* _neuralNet;
+
+		chrom* _chrom;
 	};
 }

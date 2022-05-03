@@ -51,6 +51,7 @@
     </ClCompile>
     <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
+    <ClCompile Include="GA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.hpp">
@@ -106,6 +107,7 @@
     </ClInclude>
     <ClInclude Include="Neuron.h" />
     <ClInclude Include="NeuralNetwork.h" />
+    <ClInclude Include="GA.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resources\audio\Hit.wav">

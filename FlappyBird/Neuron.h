@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <math.h>
+#include <algorithm>
+#include "GA.h"
 
 enum class ActivationFunction
 {
@@ -15,8 +18,12 @@ class Neuron
 {
 public:
 	Neuron();
+	Neuron(chrom* c);
 	Neuron(int layerIndex, int prevLayerSize);
+	Neuron(int layerIndex, chrom* c);
 	~Neuron();
+
+	void Update();
 
 	float Calculate(NeuralNetwork network);
 	//float Calculate(std::vector<float> inputs);
@@ -33,7 +40,7 @@ public:
 	float RandFrom(float min, float max);
 	float RandInRange(float val, float range);
 
-	void Mutate();
+	void Mutate(int score);
 
 	int GetLayer() { return _currentLayer; }
 
@@ -47,4 +54,6 @@ private:
 
 	float _output;
 	int _currentLayer;
+
+	chrom* _chrom;
 };

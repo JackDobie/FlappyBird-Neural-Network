@@ -1,6 +1,4 @@
 #include "Neuron.h"
-#include <math.h>
-#include <algorithm>
 #include "NeuralNetwork.h"
 #include <iostream>
 
@@ -12,11 +10,17 @@ Neuron::Neuron()
 	_output = 0.0f;
 }
 
-Neuron::Neuron(int layerIndex, int prevLayerSize)
+Neuron::Neuron(chrom* c) : _chrom(c), _bias(c->_bias)
 {
-	_currentLayer = layerIndex;
+	_currentLayer = 0;
 	_weights.clear();
-	_bias = 0.0f;
+	_weights = c->_weights;
+	_output = 0.0f;
+}
+
+Neuron::Neuron(int layerIndex, int prevLayerSize) : _currentLayer(layerIndex)
+{
+	_weights.clear();
 	_output = 0.0f;
 	for (int i = 0; i < prevLayerSize; i++)
 	{
@@ -24,9 +28,26 @@ Neuron::Neuron(int layerIndex, int prevLayerSize)
 	}
 }
 
+Neuron::Neuron(int layerIndex, chrom* c) : _currentLayer(layerIndex), _chrom(c), _bias(c->_bias)
+{
+	_weights.clear();
+	_weights = c->_weights;
+	_output = 0.0f;
+	/*for (int i = 0; i < prevLayerSize; i++)
+	{
+		_weights.push_back(RandFrom(_weightsMin, _weightsMax));
+	}*/
+}
+
 Neuron::~Neuron()
 {
 	_weights.clear();
+}
+
+void Neuron::Update()
+{
+	_weights = _chrom->_weights;
+	_bias = _chrom->_bias;
 }
 
 float Neuron::Calculate(NeuralNetwork network)
@@ -37,9 +58,9 @@ float Neuron::Calculate(NeuralNetwork network)
 	std::vector<Neuron> prevlayer = network.GetLayers()[_currentLayer - 1];
 	for (int i = 0; i < prevlayer.size(); i++)
 	{
-		_output += prevlayer[i]._output * _weights[i];
+		_output += prevlayer[i]._output * _chrom->_weights[i];
 	}
-	_output += _bias;
+	_output += _chrom->_bias;
 
 	switch (_activationFunc)
 	{
@@ -79,17 +100,26 @@ float Neuron::RandInRange(float val, float range)
 	float halfRange = range * 0.5f;
 	float min = range - halfRange;
 	float max = range + halfRange;
-	min = min < _weightsMin ? _weightsMin : min;
-	max = max > _weightsMax ? _weightsMax : max;
 	return RandFrom(min, max);
 }
 
-void Neuron::Mutate()
+void Neuron::Mutate(int score)
 {
 	for (int i = 0; i < _weights.size(); i++)
 	{
 		//_weights[i] = RandFrom(_weightsMin, _weightsMax);
 		_weights[i] = RandInRange(_weights[i], 0.5f);
+
+		/*float r = RandFrom(_weightsMin, _weightsMax);
+		float l = (1. / pow(score + 1., 2));
+		float w = l * r;
+
+		_weights[i] += w;
+
+		if (_weights[i] < _weightsMin)
+			_weights[i] = _weightsMin;
+		if (_weights[i] > _weightsMax)
+			_weights[i] = _weightsMax;*/
 	}
 }
 

@@ -26,7 +26,8 @@ namespace Sonar
 		std::stack<StateRef> _states;
 		StateRef _newState;
 
-		bool _isRemoving;
-		bool _isAdding, _isReplacing;
+		bool _isRemoving = false;
+		bool _isAdding = false;
+		bool _isReplacing = false;
 	};
 }

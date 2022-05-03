@@ -51,7 +51,9 @@ namespace Sonar
 		//_flash = new Flash(_data);
 		_hud = new HUD(_data);
 
-		_AIController = new AIController(_data);
+		_GA = new GA();
+
+		_AIController = new AIController(_data, _GA);
 		_AIController->SetGameState(this);
 
 		_background.setTexture(this->_data->assets.GetTexture("Game Background"));
@@ -60,6 +62,8 @@ namespace Sonar
 		_hud->UpdateScore(_score);
 
 		_gameState = GameStates::eReady;
+
+		srand(1);
 	}
 
 	void GameState::HandleInput()
@@ -81,16 +85,17 @@ namespace Sonar
 			}
 
 			// player tap
+#if ALLOW_PLAYER_TAP
 			if (this->_data->input.IsSpriteClicked(this->_background, sf::Mouse::Left, this->_data->window))
 			{
 				if (GameStates::eGameOver != _gameState)
 				{
 					_gameState = GameStates::ePlaying;
 					_AIController->GetBirds()[0]->Tap();
-					//bird->Tap();
 					//_wingSound.play();
 				}
 			}
+#endif
 		}
 	}
 
@@ -143,7 +148,7 @@ namespace Sonar
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
 					{
 						//_hitSound.play();
-						b->_score = _score;
+						b->SetScore(_score);
 						b->SetAlive(false);
 					}
 					else
@@ -173,7 +178,7 @@ namespace Sonar
 					if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
 					{
 						//_hitSound.play();
-						b->_score = _score;
+						b->SetScore(_score);
 						b->SetAlive(false);
 					}
 					else
@@ -259,22 +264,14 @@ namespace Sonar
 		/*_pipe = new Pipe(_data);
 		_land = new Land(_data);*/
 
-		srand(time(NULL));
-
 		_score = 0;
-		
+
+		srand(time(NULL));
+		_GA->UpdateGA();
 		_AIController->Reset();
-		/*std::vector<Bird*> oldBirds = _AIController->GetBirds();
-		_AIController = new AIController(_data);
-		_AIController->SetBirds(oldBirds);
-		for (Bird* b : _AIController->GetBirds())
-		{
-			b->Reset();
-		}*/
+		srand(1);
 
 		_gameState = GameStates::eReady;
 		_generation++;
-
-		srand(1);
 	}
 }

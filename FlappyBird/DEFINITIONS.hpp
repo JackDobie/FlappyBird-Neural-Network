@@ -55,7 +55,7 @@
 
 #define ROTATION_SPEED (100.0f * TIME_SCALE)
 
-#define TIME_SCALE 5.0f
+#define TIME_SCALE 4.0f
 
 enum GameStates
 {
@@ -72,3 +72,12 @@ enum GameStates
 #define SILVER_MEDAL_SCORE 5
 #define GOLD_MEDAL_SCORE 25
 #define PLATINUM_MEDAL_SCORE 100
+
+#define BIRD_COUNT 250
+
+#define GA_PARENT_COUNT 20
+
+#define NN_LAYERS 2
+#define NN_NEURONS 3
+
+#define ALLOW_PLAYER_TAP false

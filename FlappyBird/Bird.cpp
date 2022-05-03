@@ -1,9 +1,8 @@
 #include "Bird.hpp"
-#include <iostream>
 
 namespace Sonar
 {
-	Bird::Bird(GameDataRef data) : _data(data)
+	Bird::Bird(GameDataRef data, chrom* c) : _data(data)
 	{
 		_animationIterator = 0;
 
@@ -26,11 +25,13 @@ namespace Sonar
 
 		_shouldFlap = false;
 
-		_neuralNet = NeuralNetwork();
+		_neuralNet = new NeuralNetwork(c);
 
 		_alive = true;
 
-		_score = 0;
+		_chrom = c;
+
+		SetScore(0);
 	}
 
 	Bird::~Bird()
@@ -45,7 +46,7 @@ namespace Sonar
 		_rotation = 0;
 		_shouldFlap = false;
 		_alive = true;
-		_score = 0;
+		SetScore(0);
 		_movementClock.restart();
 		_birdState = BIRD_STATE_STILL;
 	}
@@ -134,13 +135,14 @@ namespace Sonar
 
 	void Bird::Calculate(std::vector<float> inputs)
 	{
-		_neuralNet.Calculate(inputs);
+		_neuralNet->Update();
+		_neuralNet->Calculate(inputs);
 	}
 
-	void Bird::Mutate()
+	/*void Bird::Mutate()
 	{
-		_neuralNet.Mutate();
-	}
+		_neuralNet.Mutate(_score);
+	}*/
 
 	const sf::Sprite &Bird::GetSprite() const
 	{

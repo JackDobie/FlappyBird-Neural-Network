@@ -3,14 +3,13 @@
 #include "Bird.hpp"
 #include "GameState.hpp"
 #include "NeuralNetwork.h"
+#include "GA.h"
 using namespace Sonar;
-
-#define BIRD_COUNT 200
 
 class AIController
 {
 public:
-	AIController(GameDataRef data);
+	AIController(GameDataRef data, GA* ga);
 	~AIController();
 
 	void SetGameState(GameState* pGameState) { _gameState = pGameState; }
