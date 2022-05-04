@@ -20,6 +20,8 @@ public:
 	std::vector<Bird*> GetBirds() { return _birds; }
 	void SetBirds(std::vector<Bird*> newBirds) { _birds = newBirds; }
 
+	int AliveBirdsCount();
+
 	void Reset();
 
 private:

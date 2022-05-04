@@ -14,7 +14,7 @@ namespace Sonar
 	class Bird
 	{
 	public:
-		Bird(GameDataRef data, chrom* c);
+		Bird(GameDataRef data, Chrom* c);
 		~Bird();
 
 		void Reset();
@@ -40,19 +40,15 @@ namespace Sonar
 		bool GetAlive() { return _alive; }
 		void SetAlive(bool alive) { _alive = alive; }
 
-		/*NeuralNetwork* pGetNeuralNetwork() { return &_neuralNet; }
-		NeuralNetwork GetNeuralNetwork() { return _neuralNet; }*/
 		float GetNNOutput() { return _neuralNet->GetLayers().back()[0].GetOutput(); }
 		void SetNeuralNetwork(NeuralNetwork* newNeuralNet) { _neuralNet = newNeuralNet; }
 
-		chrom* pGetChrom() { return _chrom; }
-		chrom GetChrom() { return *_chrom; }
-		void SetChrom(chrom* newChrom) { _chrom = newChrom; }
+		Chrom* pGetChrom() { return _chrom; }
+		Chrom GetChrom() { return *_chrom; }
+		void SetChrom(Chrom* newChrom) { _chrom = newChrom; }
 
 		void SetScore(int newScore) { _chrom->_score = newScore; }
 		int GetScore() { return _chrom->_score; }
-
-		//int _score;
 
 	private:
 		GameDataRef _data;
@@ -76,6 +72,6 @@ namespace Sonar
 
 		NeuralNetwork* _neuralNet;
 
-		chrom* _chrom;
+		Chrom* _chrom;
 	};
 }

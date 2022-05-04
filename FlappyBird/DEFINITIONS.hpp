@@ -40,7 +40,8 @@
 #define WING_SOUND_FILEPATH "Resources/audio/Wing.wav"
 
 #define PIPE_MOVEMENT_SPEED (200.0f * TIME_SCALE)
-#define PIPE_SPAWN_FREQUENCY (1.5f / TIME_SCALE)
+#define PIPE_SPAWN_FREQUENCY (4.0f / TIME_SCALE) // default: 1.5f
+#define PIPE_RANDOM_OFFSET true
 
 #define BIRD_ANIMATION_DURATION (0.4f / TIME_SCALE)
 
@@ -73,9 +74,9 @@ enum GameStates
 #define GOLD_MEDAL_SCORE 25
 #define PLATINUM_MEDAL_SCORE 100
 
-#define BIRD_COUNT 250
+#define BIRD_COUNT 300
 
-#define GA_PARENT_COUNT 20
+#define GA_PARENT_COUNT 30
 
 #define NN_LAYERS 2
 #define NN_NEURONS 3

@@ -11,7 +11,14 @@ namespace Sonar
 {
 	GameState::GameState(GameDataRef data) : _data(data)
 	{
-		Init();
+		//Init();
+	}
+
+	GameState::~GameState()
+	{
+		if (_hud) delete(_hud);
+		if (_pipe) delete(_pipe);
+		if (_land) delete(_land);
 	}
 
 	void GameState::Init()
@@ -55,15 +62,15 @@ namespace Sonar
 
 		_AIController = new AIController(_data, _GA);
 		_AIController->SetGameState(this);
+		_AIController->Reset();
 
 		_background.setTexture(this->_data->assets.GetTexture("Game Background"));
 
 		_score = 0;
 		_hud->UpdateScore(_score);
+		_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 
 		_gameState = GameStates::eReady;
-
-		srand(1);
 	}
 
 	void GameState::HandleInput()
@@ -116,7 +123,11 @@ namespace Sonar
 
 			if (_clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
 			{
+#if PIPE_RANDOM_OFFSET
 				_pipe->RandomisePipeOffset();
+#else
+				_pipe->PickPipeOffset(_score);
+#endif
 
 				_pipe->SpawnInvisiblePipe();
 				_pipe->SpawnBottomPipe();
@@ -150,6 +161,7 @@ namespace Sonar
 						//_hitSound.play();
 						b->SetScore(_score);
 						b->SetAlive(false);
+						_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 					}
 					else
 					{
@@ -180,6 +192,7 @@ namespace Sonar
 						//_hitSound.play();
 						b->SetScore(_score);
 						b->SetAlive(false);
+						_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 					}
 					else
 					{
@@ -200,8 +213,16 @@ namespace Sonar
 
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
+					if (scoringSprites.size() == i)
+					{
+						break;
+					}
 					for (Bird* b : _AIController->GetBirds())
 					{
+						if (scoringSprites.size() == i)
+						{
+							break;
+						}
 						if (_collision.CheckSpriteCollision(b->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
 						{
 							_score++;
@@ -255,23 +276,19 @@ namespace Sonar
 
 	void GameState::Reset()
 	{
-		delete(_hud);
-		_hud = new HUD(_data);
+		_score = 0;
+
 		_hud->UpdateScore(_score);
 
 		_pipe->Reset();
 		_land->Reset();
-		/*_pipe = new Pipe(_data);
-		_land = new Land(_data);*/
 
-		_score = 0;
-
-		srand(time(NULL));
 		_GA->UpdateGA();
 		_AIController->Reset();
-		srand(1);
+		_hud->UpdateBirdCount(_AIController->GetBirds().size());
 
 		_gameState = GameStates::eReady;
 		_generation++;
+		_hud->UpdateGen(_generation);
 	}
 }

@@ -4,10 +4,10 @@
 #include <algorithm>
 #include "DEFINITIONS.hpp"
 
-class chrom
+class Chrom
 {
 public:
-	chrom()
+	Chrom()
 	{
 		_bias = 0.0f;
 		_score = 0;
@@ -38,14 +38,14 @@ public:
 
 	void SetChromScore(int index, int score) { _chroms[index]->_score = score; }
 
-	std::vector<chrom*> GetChroms() { return _chroms; }
+	std::vector<Chrom*> GetChroms() { return _chroms; }
 private:
 	void evpop();
 
 	const float _weightsMin = -0.7f;
 	const float _weightsMax = 0.7f;
 
-	std::vector<chrom*> _chroms;
+	std::vector<Chrom*> _chroms;
 
 
 };

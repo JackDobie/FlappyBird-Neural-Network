@@ -7,6 +7,11 @@ GA::GA()
 
 GA::~GA()
 {
+	for (Chrom* c : _chroms)
+	{
+		delete(c);
+	}
+	_chroms.clear();
 }
 
 void GA::evpop()
@@ -14,7 +19,7 @@ void GA::evpop()
 	// generate chroms for population size
 	for (int i = 0; i < BIRD_COUNT; i++)
 	{
-		_chroms.push_back(new chrom());
+		_chroms.push_back(new Chrom());
 		for (int j = 0; j < NN_NEURONS; j++)
 		{
 			_chroms[i]->_weights.push_back(RandFrom(_weightsMin, _weightsMax));
@@ -34,7 +39,7 @@ void GA::Sort()
 {
 	// sort chroms by score descending
 	sort(_chroms.rbegin(), _chroms.rend(),
-		[](const chrom* lhs, const chrom* rhs)
+		[](const Chrom* lhs, const Chrom* rhs)
 		{ return lhs->_score < rhs->_score; });
 }
 
@@ -54,7 +59,7 @@ void GA::Crossover()
 
 void GA::Mutate()
 {
-	for (int i = 0; i < BIRD_COUNT; i++)
+	for (int i = GA_PARENT_COUNT; i < BIRD_COUNT; i++)
 	{
 		if (rand() % 2 == 1)
 		{
@@ -67,8 +72,28 @@ void GA::Mutate(int index)
 {
 	for (int i = 0; i < _chroms[index]->_weights.size(); i++)
 	{
-		_chroms[index]->_weights[i] = RandFrom(_weightsMin, _weightsMax);
-		_chroms[index]->_weights[i] = RandInRange(_chroms[index]->_weights[i], 0.5f);
+		float range = 0.5f;
+
+		int r = rand() % 4;
+		switch (r)
+		{
+		case 0:
+			// mutate weights randomly
+			_chroms[index]->_weights[i] = RandFrom(_weightsMin, _weightsMax);
+			break;
+		case 1:
+			// mutate weights in range
+			_chroms[index]->_weights[i] = RandInRange(_chroms[index]->_weights[i], range);
+			break;
+		case 2:
+			// mutate bias randomly
+			_chroms[index]->_bias = RandFrom(_weightsMin, _weightsMax);
+			break;
+		case 3:
+			// mutate bias in range
+			_chroms[index]->_bias = RandInRange(_chroms[index]->_bias, range);
+			break;
+		}
 	}
 }
 

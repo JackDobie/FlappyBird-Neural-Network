@@ -10,6 +10,7 @@ namespace Sonar
 	{
 	public:
 		Pipe(GameDataRef data);
+		~Pipe();
 
 		void SpawnBottomPipe();
 		void SpawnTopPipe();
@@ -18,12 +19,12 @@ namespace Sonar
 		void MovePipes(float dt);
 		void DrawPipes();
 		void RandomisePipeOffset();
+		void PickPipeOffset(int score);
 
 		void Reset();
 
 		const std::vector<sf::Sprite> &GetSprites() const;
 		std::vector<sf::Sprite> &GetScoringSprites();
-
 	private:
 		GameDataRef _data;
 		std::vector<sf::Sprite> _pipeSprites;
@@ -32,5 +33,6 @@ namespace Sonar
 		int _landHeight;
 		int _pipeSpawnYOffset;
 
+		std::vector<int> _offsets;
 	};
 }

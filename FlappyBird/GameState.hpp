@@ -20,6 +20,7 @@ namespace Sonar
 	{
 	public:
 		GameState(GameDataRef data);
+		~GameState();
 
 		void Init();
 

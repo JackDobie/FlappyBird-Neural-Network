@@ -18,15 +18,14 @@ class Neuron
 {
 public:
 	Neuron();
-	Neuron(chrom* c);
+	Neuron(Chrom* c);
 	Neuron(int layerIndex, int prevLayerSize);
-	Neuron(int layerIndex, chrom* c);
+	Neuron(int layerIndex, Chrom* c);
 	~Neuron();
 
 	void Update();
 
 	float Calculate(NeuralNetwork network);
-	//float Calculate(std::vector<float> inputs);
 
 	float Sigmoid(float value);
 	float ReLu(float value);
@@ -39,8 +38,6 @@ public:
 
 	float RandFrom(float min, float max);
 	float RandInRange(float val, float range);
-
-	void Mutate(int score);
 
 	int GetLayer() { return _currentLayer; }
 
@@ -55,5 +52,5 @@ private:
 	float _output;
 	int _currentLayer;
 
-	chrom* _chrom;
+	Chrom* _chrom;
 };

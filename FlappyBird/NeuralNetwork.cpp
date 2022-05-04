@@ -21,16 +21,8 @@ NeuralNetwork::NeuralNetwork()
 	}
 }
 
-NeuralNetwork::NeuralNetwork(chrom* c)
+NeuralNetwork::NeuralNetwork(Chrom* c)
 {
-	//_layerCount = NN_LAYERS;
-
-	/*_weights.clear();
-	for (int i = 0; i < NN_NEURONS; i++)
-	{
-		_weights.push_back(RandFrom(_weightsMin, _weightsMax));
-	}*/
-
 	_layers.clear();
 	for (int i = 0; i < NN_LAYERS; i++)
 	{
@@ -89,20 +81,7 @@ void NeuralNetwork::Calculate(std::vector<float> inputs)
 	}
 }
 
-void NeuralNetwork::Mutate(int score)
-{
-	for (int i = 0; i < _layers.size(); i++)
-	{
-		for (int j = 0; j < _layers[0].size(); j++)
-		{
-			_layers[i][j].Mutate(score);
-		}
-	}
-}
-
 void NeuralNetwork::operator=(NeuralNetwork nn)
 {
 	_layers = nn._layers;
-	//_weights = nn._weights;
-	//_layerCount = nn._layerCount;
 }

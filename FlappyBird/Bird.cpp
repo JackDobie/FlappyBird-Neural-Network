@@ -2,7 +2,7 @@
 
 namespace Sonar
 {
-	Bird::Bird(GameDataRef data, chrom* c) : _data(data)
+	Bird::Bird(GameDataRef data, Chrom* c) : _data(data)
 	{
 		_animationIterator = 0;
 
@@ -36,6 +36,8 @@ namespace Sonar
 
 	Bird::~Bird()
 	{
+		if (_neuralNet) delete(_neuralNet);
+		if (_chrom) delete(_chrom);
 	}
 
 	void Bird::Reset()

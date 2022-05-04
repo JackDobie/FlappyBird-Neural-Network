@@ -10,7 +10,7 @@ Neuron::Neuron()
 	_output = 0.0f;
 }
 
-Neuron::Neuron(chrom* c) : _chrom(c), _bias(c->_bias)
+Neuron::Neuron(Chrom* c) : _chrom(c), _bias(c->_bias)
 {
 	_currentLayer = 0;
 	_weights.clear();
@@ -28,7 +28,7 @@ Neuron::Neuron(int layerIndex, int prevLayerSize) : _currentLayer(layerIndex)
 	}
 }
 
-Neuron::Neuron(int layerIndex, chrom* c) : _currentLayer(layerIndex), _chrom(c), _bias(c->_bias)
+Neuron::Neuron(int layerIndex, Chrom* c) : _currentLayer(layerIndex), _chrom(c), _bias(c->_bias)
 {
 	_weights.clear();
 	_weights = c->_weights;
@@ -101,26 +101,6 @@ float Neuron::RandInRange(float val, float range)
 	float min = range - halfRange;
 	float max = range + halfRange;
 	return RandFrom(min, max);
-}
-
-void Neuron::Mutate(int score)
-{
-	for (int i = 0; i < _weights.size(); i++)
-	{
-		//_weights[i] = RandFrom(_weightsMin, _weightsMax);
-		_weights[i] = RandInRange(_weights[i], 0.5f);
-
-		/*float r = RandFrom(_weightsMin, _weightsMax);
-		float l = (1. / pow(score + 1., 2));
-		float w = l * r;
-
-		_weights[i] += w;
-
-		if (_weights[i] < _weightsMin)
-			_weights[i] = _weightsMin;
-		if (_weights[i] > _weightsMax)
-			_weights[i] = _weightsMax;*/
-	}
 }
 
 void Neuron::operator=(Neuron n)
