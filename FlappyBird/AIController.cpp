@@ -14,15 +14,21 @@ AIController::AIController(GameDataRef data, GA* ga)
 	{
 		_birds.push_back(new Bird(data, ga->GetChroms()[i]));
 	}
+	_aliveBirds = _birds;
 }
 
 AIController::~AIController()
 {
 	for (Bird* b : _birds)
 	{
-		delete(b);
+		if(b) delete(b);
 	}
 	_birds.clear();
+	for (Bird* b : _aliveBirds)
+	{
+		if (b) delete(b);
+	}
+	_aliveBirds.clear();
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
@@ -35,20 +41,43 @@ void AIController::Update()
 	Pipe* pipe = _gameState->GetPipeContainer();
 	Land* land = _gameState->GetLandContainer();
 
-	for (Bird* b : _birds)
+	_aliveBirds = _birds;
+	for (int i = 0; i < _aliveBirds.size(); i++)
 	{
-		if (!b->GetAlive())
-			continue;
+		if (!_aliveBirds[i]->GetAlive())
+		{
+#if !OUTPUT_ON_UPDATE
+			if (_aliveBirds[i]->GetWaitingToOutput())
+			{
+				float fDistanceToFloor = DistanceToFloor(land, _aliveBirds[i]);
+				float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, _aliveBirds[i]);
+				float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, _aliveBirds[i]);
+
+				std::vector<float> weights = _aliveBirds[i]->GetChrom()._weights;
+				float bias = _aliveBirds[i]->GetChrom()._bias;
+				// output the inputs and weights etc
+				std::cout << "Inputs:\t" << fDistanceToFloor << ", " << fDistanceToNearestPipe << ", " << fDistanceToCentreOfGap <<
+					"\nWeights:\t" << weights[0] << ", " << weights[1] << ", " << weights[2] <<
+					"\nBias:\t" << bias << "\n-------------" << std::endl;
+			}
+#endif
+			_aliveBirds.erase(_aliveBirds.begin() + i);
+			i--;
+		}
+	}
+	for (int i = 0; i < _aliveBirds.size(); i++)
+	{
+		Bird* b = _aliveBirds[i];
 
 		float fDistanceToFloor = DistanceToFloor(land, b);
 
 		float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, b);
 		//if (fDistanceToNearestPipe != ERROR_DISTANCE) {
 
-		if (fDistanceToNearestPipe == ERROR_DISTANCE)
+		/*if (fDistanceToNearestPipe == ERROR_DISTANCE)
 		{
 			fDistanceToNearestPipe = 0;
-		}
+		}*/
 
 		float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
 
@@ -59,6 +88,18 @@ void AIController::Update()
 		{
 			b->SetShouldFlap(true);
 		}
+
+#if OUTPUT_ON_UPDATE
+		if (i == 0)
+		{
+			std::vector<float> weights = b->GetChrom()._weights;
+			float bias = b->GetChrom()._bias;
+			// output the inputs and weights etc
+			std::cout << "Bird 0:\nInputs:\t" << fDistanceToFloor << ", " << fDistanceToNearestPipe << ", " << fDistanceToCentreOfGap <<
+				"\nWeights:\t" << weights[0] << ", " << weights[1] << ", " << weights[2] <<
+				"\nBias:\t" << bias << "\n-------------" << std::endl;
+		}
+#endif
 	}
 }
 
@@ -149,7 +190,7 @@ float AIController::DistanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 
 void AIController::TryFlap()
 {
-	for (Bird* b : _birds)
+	for (Bird* b : _aliveBirds)
 	{
 		// check if b needs to flap, then flap and set to false
 		if (b->GetShouldFlap())
@@ -171,16 +212,57 @@ int AIController::AliveBirdsCount()
 		}
 	}
 	return count;
+
+	//return _aliveBirds.size();
+}
+
+std::vector<Bird*> AIController::GetAliveBirds()
+{
+	std::vector<Bird*> alivebirds;
+	for (Bird* b : _birds)
+	{
+		if (b->GetAlive())
+		{
+			alivebirds.push_back(b);
+		}
+	}
+	_aliveBirds = alivebirds;
+
+	return _aliveBirds;
 }
 
 void AIController::Reset()
 {
-	/*for (int i = 0; i < _birds.size(); i++)
-	{
-		_birds[i] = new Bird(data, ga->GetChroms()[i]);
-	}*/
 	for (Bird* b : _birds)
 	{
 		b->Reset();
+	}
+	_aliveBirds = _birds;
+}
+
+void AIController::TryOutput(bool overrideCheck)
+{
+	for (Bird* b : _birds)
+	{
+		TryOutput(b, overrideCheck);
+	}
+}
+
+void AIController::TryOutput(Bird* b, bool overrideCheck)
+{
+	Pipe* pipe = _gameState->GetPipeContainer();
+	Land* land = _gameState->GetLandContainer();
+	if (b->GetWaitingToOutput() || overrideCheck)
+	{
+		float fDistanceToFloor = DistanceToFloor(land, b);
+		float fDistanceToNearestPipe = DistanceToNearestPipes(pipe, b);
+		float fDistanceToCentreOfGap = DistanceToCentreOfPipeGap(pipe, b);
+
+		std::vector<float> weights = b->GetChrom()._weights;
+		float bias = b->GetChrom()._bias;
+		// output the inputs and weights etc
+		std::cout << "Inputs:\t\t" << fDistanceToFloor << ", " << fDistanceToNearestPipe << ", " << fDistanceToCentreOfGap <<
+			"\nWeights:\t" << weights[0] << ", " << weights[1] << ", " << weights[2] <<
+			"\nBias:\t\t" << bias << "\n-------------" << std::endl;
 	}
 }

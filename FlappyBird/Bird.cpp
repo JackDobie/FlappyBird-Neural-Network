@@ -31,6 +31,8 @@ namespace Sonar
 
 		_chrom = c;
 
+		_waitingToOutput = false;
+
 		SetScore(0);
 	}
 
@@ -51,6 +53,7 @@ namespace Sonar
 		SetScore(0);
 		_movementClock.restart();
 		_birdState = BIRD_STATE_STILL;
+		_waitingToOutput = false;
 	}
 
 	void Bird::Draw()

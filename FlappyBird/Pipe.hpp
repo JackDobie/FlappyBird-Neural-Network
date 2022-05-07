@@ -12,6 +12,7 @@ namespace Sonar
 		Pipe(GameDataRef data);
 		~Pipe();
 
+		void SpawnPipes(int score);
 		void SpawnBottomPipe();
 		void SpawnTopPipe();
 		void SpawnInvisiblePipe();

@@ -65,5 +65,7 @@ namespace Sonar
 		AIController* _AIController;
 
 		GA* _GA;
+
+		const sf::Keyboard::Key _debugOutKey = sf::Keyboard::Space;
 	};
 }

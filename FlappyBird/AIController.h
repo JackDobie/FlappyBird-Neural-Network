@@ -21,8 +21,13 @@ public:
 	void SetBirds(std::vector<Bird*> newBirds) { _birds = newBirds; }
 
 	int AliveBirdsCount();
+	std::vector<Bird*> GetAliveBirds();
 
 	void Reset();
+
+	// checks if any birds need to output and outputs their data if they do
+	void TryOutput(bool overrideCheck);
+	void TryOutput(Bird* b, bool overrideCheck);
 
 private:
 	float DistanceToFloor(Land* land, Bird* bird);
@@ -32,5 +37,6 @@ private:
 	GameState*	_gameState;
 
 	std::vector<Bird*> _birds;
+	std::vector<Bird*> _aliveBirds;
 };
 

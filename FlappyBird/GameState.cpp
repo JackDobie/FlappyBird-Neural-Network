@@ -71,6 +71,7 @@ namespace Sonar
 		_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 
 		_gameState = GameStates::eReady;
+		_pipe->SpawnPipes(_score);
 	}
 
 	void GameState::HandleInput()
@@ -89,6 +90,11 @@ namespace Sonar
 			if (sf::Event::Closed == event.type)
 			{
 				this->_data->window.close();
+			}
+
+			if (this->_data->input.GetKeyDown(event, _debugOutKey))
+			{
+				_AIController->TryOutput(_AIController->GetAliveBirds()[0], true);
 			}
 
 			// player tap
@@ -123,16 +129,17 @@ namespace Sonar
 
 			if (_clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
 			{
-#if PIPE_RANDOM_OFFSET
-				_pipe->RandomisePipeOffset();
-#else
-				_pipe->PickPipeOffset(_score);
-#endif
-
-				_pipe->SpawnInvisiblePipe();
-				_pipe->SpawnBottomPipe();
-				_pipe->SpawnTopPipe();
-				_pipe->SpawnScoringPipe();
+				_pipe->SpawnPipes(_score);
+//#if PIPE_RANDOM_OFFSET
+//				_pipe->RandomisePipeOffset();
+//#else
+//				_pipe->PickPipeOffset(_score);
+//#endif
+//
+//				_pipe->SpawnInvisiblePipe();
+//				_pipe->SpawnBottomPipe();
+//				_pipe->SpawnTopPipe();
+//				_pipe->SpawnScoringPipe();
 
 				_clock.restart();
 			}
@@ -161,6 +168,10 @@ namespace Sonar
 						//_hitSound.play();
 						b->SetScore(_score);
 						b->SetAlive(false);
+						if (_AIController->AliveBirdsCount() == 0)
+						{
+							b->SetWaitingToOutput(true);
+						}
 						_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 					}
 					else
@@ -192,6 +203,10 @@ namespace Sonar
 						//_hitSound.play();
 						b->SetScore(_score);
 						b->SetAlive(false);
+						if (_AIController->AliveBirdsCount() == 0)
+						{
+							b->SetWaitingToOutput(true);
+						}
 						_hud->UpdateBirdCount(_AIController->AliveBirdsCount());
 					}
 					else
@@ -242,7 +257,10 @@ namespace Sonar
 		{
 			//_flash->Show(dt);
 
-			std::cout << "Generation: " << _generation + 1 << "\tScore: " << _score << std::endl;
+			std::cout << "Generation:\t" << _generation + 1 << "\nScore:\t\t" << _score << std::endl;
+#if !OUTPUT_ON_UPDATE
+			_AIController->TryOutput(false);
+#endif
 			Reset();
 
 			/*if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
@@ -288,7 +306,8 @@ namespace Sonar
 		_hud->UpdateBirdCount(_AIController->GetBirds().size());
 
 		_gameState = GameStates::eReady;
-		_generation++;
-		_hud->UpdateGen(_generation);
+		_hud->UpdateGen(++_generation);
+		_pipe->SpawnPipes(_score);
+		_clock.restart();
 	}
 }

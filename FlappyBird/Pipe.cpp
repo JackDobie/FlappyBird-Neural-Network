@@ -10,6 +10,7 @@ namespace Sonar
 		_landHeight = this->_data->assets.GetTexture("Land").getSize().y;
 		_pipeSpawnYOffset = 0;
 
+#if !PIPE_RANDOM_OFFSET
 		_offsets.push_back(0);
 		_offsets.push_back(_landHeight / 4);
 		_offsets.push_back(_landHeight / 2);
@@ -19,6 +20,7 @@ namespace Sonar
 		_offsets.push_back((_landHeight / 4) + (_landHeight / 2));
 		_offsets.push_back(_landHeight / 2);
 		_offsets.push_back(_landHeight / 4);
+#endif
 	}
 
 	Pipe::~Pipe()
@@ -26,6 +28,20 @@ namespace Sonar
 		_pipeSprites.clear();
 		_scoringPipes.clear();
 		_offsets.clear();
+	}
+
+	void Pipe::SpawnPipes(int score)
+	{
+#if PIPE_RANDOM_OFFSET
+		RandomisePipeOffset();
+#else
+		PickPipeOffset(score);
+#endif
+
+		SpawnInvisiblePipe();
+		SpawnBottomPipe();
+		SpawnTopPipe();
+		SpawnScoringPipe();
 	}
 
 	void Pipe::SpawnBottomPipe()
@@ -113,7 +129,7 @@ namespace Sonar
 
 	void Pipe::PickPipeOffset(int score)
 	{
-		_pipeSpawnYOffset = _offsets[score % _offsets.size()];
+		_pipeSpawnYOffset = _offsets[(score + 1) % _offsets.size()];
 	}
 
 	void Pipe::Reset()

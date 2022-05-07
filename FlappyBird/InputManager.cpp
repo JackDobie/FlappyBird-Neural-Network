@@ -23,4 +23,20 @@ namespace Sonar
 	{
 		return sf::Mouse::getPosition(window);
 	}
+
+	bool InputManager::GetKeyPressed(sf::Keyboard::Key key)
+	{
+		return sf::Keyboard::isKeyPressed(key);
+	}
+	bool InputManager::GetKeyDown(sf::Event e, sf::Keyboard::Key key)
+	{
+		if (e.type == sf::Event::KeyPressed)
+		{
+			if (e.key.code == key)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

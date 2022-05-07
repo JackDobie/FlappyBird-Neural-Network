@@ -50,6 +50,9 @@ namespace Sonar
 		void SetScore(int newScore) { _chrom->_score = newScore; }
 		int GetScore() { return _chrom->_score; }
 
+		void SetWaitingToOutput(bool output) { _waitingToOutput = output; }
+		bool GetWaitingToOutput() { return _waitingToOutput; }
+
 	private:
 		GameDataRef _data;
 
@@ -73,5 +76,7 @@ namespace Sonar
 		NeuralNetwork* _neuralNet;
 
 		Chrom* _chrom;
+
+		bool _waitingToOutput;
 	};
 }
