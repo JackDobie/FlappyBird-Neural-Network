@@ -130,16 +130,6 @@ namespace Sonar
 			if (_clock.getElapsedTime().asSeconds() > PIPE_SPAWN_FREQUENCY)
 			{
 				_pipe->SpawnPipes(_score);
-//#if PIPE_RANDOM_OFFSET
-//				_pipe->RandomisePipeOffset();
-//#else
-//				_pipe->PickPipeOffset(_score);
-//#endif
-//
-//				_pipe->SpawnInvisiblePipe();
-//				_pipe->SpawnBottomPipe();
-//				_pipe->SpawnTopPipe();
-//				_pipe->SpawnScoringPipe();
 
 				_clock.restart();
 			}

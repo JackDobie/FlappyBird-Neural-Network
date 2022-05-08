@@ -264,5 +264,7 @@ void AIController::TryOutput(Bird* b, bool overrideCheck)
 		std::cout << "Inputs:\t\t" << fDistanceToFloor << ", " << fDistanceToNearestPipe << ", " << fDistanceToCentreOfGap <<
 			"\nWeights:\t" << weights[0] << ", " << weights[1] << ", " << weights[2] <<
 			"\nBias:\t\t" << bias << "\n-------------" << std::endl;
+
+		b->SetWaitingToOutput(false);
 	}
 }

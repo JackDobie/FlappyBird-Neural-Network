@@ -24,6 +24,8 @@ namespace Sonar
 
 		void Reset();
 
+		float RandFrom(float min, float max);
+
 		const std::vector<sf::Sprite> &GetSprites() const;
 		std::vector<sf::Sprite> &GetScoringSprites();
 	private:

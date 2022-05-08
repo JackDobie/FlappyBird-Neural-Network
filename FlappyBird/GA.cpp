@@ -23,8 +23,8 @@ void GA::evpop()
 		for (int j = 0; j < NN_NEURONS; j++)
 		{
 			_chroms[i]->_weights.push_back(RandFrom(_weightsMin, _weightsMax));
-			_chroms[i]->_bias = RandFrom(_weightsMin, _weightsMax);
 		}
+		_chroms[i]->_bias = RandFrom(_weightsMin, _weightsMax);
 	}
 }
 

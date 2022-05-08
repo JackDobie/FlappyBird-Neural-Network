@@ -10,7 +10,12 @@ namespace Sonar
 		_landHeight = this->_data->assets.GetTexture("Land").getSize().y;
 		_pipeSpawnYOffset = 0;
 
-#if !PIPE_RANDOM_OFFSET
+#if PIPE_RANDOM_OFFSET
+		for (int i = 0; i < PIPE_RANDOM_OFFSET_COUNT; i++)
+		{
+			_offsets.push_back(RandFrom(0, _landHeight));
+		}
+#else
 		_offsets.push_back(0);
 		_offsets.push_back(_landHeight / 4);
 		_offsets.push_back(_landHeight / 2);
@@ -32,11 +37,7 @@ namespace Sonar
 
 	void Pipe::SpawnPipes(int score)
 	{
-#if PIPE_RANDOM_OFFSET
-		RandomisePipeOffset();
-#else
 		PickPipeOffset(score);
-#endif
 
 		SpawnInvisiblePipe();
 		SpawnBottomPipe();
@@ -129,7 +130,7 @@ namespace Sonar
 
 	void Pipe::PickPipeOffset(int score)
 	{
-		_pipeSpawnYOffset = _offsets[(score + 1) % _offsets.size()];
+		_pipeSpawnYOffset = _offsets[score % _offsets.size()];
 	}
 
 	void Pipe::Reset()
@@ -137,6 +138,14 @@ namespace Sonar
 		_pipeSpawnYOffset = 0;
 		_pipeSprites.clear();
 		_scoringPipes.clear();
+	}
+
+	float Pipe::RandFrom(float min, float max)
+	{
+		float random = ((float)rand()) / (float)RAND_MAX;
+		random = random * (max - min);
+		random += min;
+		return random;
 	}
 
 	const std::vector<sf::Sprite> &Pipe::GetSprites() const
